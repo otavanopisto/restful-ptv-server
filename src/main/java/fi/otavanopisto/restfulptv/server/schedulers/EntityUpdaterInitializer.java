@@ -8,6 +8,8 @@ import javax.inject.Inject;
 import com.bertoncelj.wildflysingletonservice.Start;
 import com.bertoncelj.wildflysingletonservice.Stop;
 
+import fi.otavanopisto.restfulptv.server.organizations.OrganizationEntityUpdater;
+
 @ApplicationScoped
 @SuppressWarnings ("squid:S3306")
 public class EntityUpdaterInitializer {

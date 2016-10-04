@@ -1,4 +1,4 @@
-package fi.otavanopisto.restfulptv.server.schedulers;
+package fi.otavanopisto.restfulptv.server.organizations;
 
 public class OrganizationIdUpdateRequest {
 
