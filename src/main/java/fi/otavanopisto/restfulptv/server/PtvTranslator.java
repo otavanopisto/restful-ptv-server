@@ -1,6 +1,9 @@
 package fi.otavanopisto.restfulptv.server;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,24 +11,42 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 
 import fi.otavanopisto.ptv.client.model.IVmOpenApiService;
+import fi.otavanopisto.ptv.client.model.VmOpenApiAddress;
 import fi.otavanopisto.ptv.client.model.VmOpenApiAddressWithType;
+import fi.otavanopisto.ptv.client.model.VmOpenApiAttachment;
+import fi.otavanopisto.ptv.client.model.VmOpenApiAttachmentWithType;
+import fi.otavanopisto.ptv.client.model.VmOpenApiElectronicChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiFintoItem;
 import fi.otavanopisto.ptv.client.model.VmOpenApiLanguageItem;
 import fi.otavanopisto.ptv.client.model.VmOpenApiLocalizedListItem;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganization;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganizationEmail;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganizationPhone;
+import fi.otavanopisto.ptv.client.model.VmOpenApiPhoneChannel;
+import fi.otavanopisto.ptv.client.model.VmOpenApiPrintableFormChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiService;
+import fi.otavanopisto.ptv.client.model.VmOpenApiServiceHour;
+import fi.otavanopisto.ptv.client.model.VmOpenApiServiceLocationChannel;
+import fi.otavanopisto.ptv.client.model.VmOpenApiSupport;
 import fi.otavanopisto.ptv.client.model.VmOpenApiWebPage;
+import fi.otavanopisto.ptv.client.model.VmOpenApiWebPageChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.Address;
+import fi.otavanopisto.restfulptv.server.rest.model.Attachment;
+import fi.otavanopisto.restfulptv.server.rest.model.ElectronicChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.FintoItem;
 import fi.otavanopisto.restfulptv.server.rest.model.LanguageItem;
 import fi.otavanopisto.restfulptv.server.rest.model.LocalizedListItem;
 import fi.otavanopisto.restfulptv.server.rest.model.Organization;
 import fi.otavanopisto.restfulptv.server.rest.model.OrganizationEmail;
 import fi.otavanopisto.restfulptv.server.rest.model.OrganizationPhone;
+import fi.otavanopisto.restfulptv.server.rest.model.PhoneChannel;
+import fi.otavanopisto.restfulptv.server.rest.model.PrintableFormChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.Service;
+import fi.otavanopisto.restfulptv.server.rest.model.ServiceHour;
+import fi.otavanopisto.restfulptv.server.rest.model.ServiceLocationChannel;
+import fi.otavanopisto.restfulptv.server.rest.model.Support;
 import fi.otavanopisto.restfulptv.server.rest.model.WebPage;
+import fi.otavanopisto.restfulptv.server.rest.model.WebPageChannel;
 
 @RequestScoped
 public class PtvTranslator implements Serializable {
@@ -97,7 +118,7 @@ public class PtvTranslator implements Serializable {
     return result;
   }
 
-  public List<LanguageItem> translateLangaugeItems(List<VmOpenApiLanguageItem> ptvLanguageItems) {
+  public List<LanguageItem> translateLanguageItems(List<VmOpenApiLanguageItem> ptvLanguageItems) {
     if (ptvLanguageItems == null || ptvLanguageItems.isEmpty()) {
       return Collections.emptyList();
     }
@@ -131,6 +152,58 @@ public class PtvTranslator implements Serializable {
     List<FintoItem> result = new ArrayList<>(ptvFintoItems.size());
     for (VmOpenApiFintoItem ptvFintoItem : ptvFintoItems) {
       result.add(translateFintoItem(ptvFintoItem));
+    }
+
+    return result;
+  }
+
+  private List<Support> translateSupports(List<VmOpenApiSupport> ptvSupports) {
+    if (ptvSupports == null || ptvSupports.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
+    List<Support> result = new ArrayList<>(ptvSupports.size());
+    for (VmOpenApiSupport ptvSupport : ptvSupports) {
+      result.add(translateSupport(ptvSupport));
+    }
+
+    return result;
+  }
+
+  private List<Attachment> translateAttachmentsWithType(List<VmOpenApiAttachmentWithType> ptvAttachments) {
+    if (ptvAttachments == null || ptvAttachments.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
+    List<Attachment> result = new ArrayList<>(ptvAttachments.size());
+    for (VmOpenApiAttachmentWithType ptvAttchment : ptvAttachments) {
+      result.add(translateAttachment(ptvAttchment));
+    }
+
+    return result;
+  }
+  
+  private List<Attachment> translateAttachments(List<VmOpenApiAttachment> ptvAttachments) {
+    if (ptvAttachments == null || ptvAttachments.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
+    List<Attachment> result = new ArrayList<>(ptvAttachments.size());
+    for (VmOpenApiAttachment ptvAttchment : ptvAttachments) {
+      result.add(translateAttachment(ptvAttchment));
+    }
+
+    return result;
+  }
+  
+  private List<ServiceHour> translateServiceHours(List<VmOpenApiServiceHour> ptvServiceHours) {
+    if (ptvServiceHours == null) {
+      return Collections.emptyList();
+    }
+
+    List<ServiceHour> result = new ArrayList<>();
+    for (VmOpenApiServiceHour ptvServiceHour : ptvServiceHours) {
+      translateServiceHour(result, ptvServiceHour);
     }
 
     return result;
@@ -189,8 +262,27 @@ public class PtvTranslator implements Serializable {
     result.setMunicipality(ptvAddress.getMunicipality());
     result.setCountry(ptvAddress.getCountry());
     result.setQualifier(ptvAddress.getQualifier());
-    result.setStreetAddress(translateLangaugeItems(ptvAddress.getStreetAddress()));
-    result.setAdditionalInformations(translateLangaugeItems(ptvAddress.getAdditionalInformations()));
+    result.setStreetAddress(translateLanguageItems(ptvAddress.getStreetAddress()));
+    result.setAdditionalInformations(translateLanguageItems(ptvAddress.getAdditionalInformations()));
+    
+    return result;
+  }
+
+  public Address translateAddress(VmOpenApiAddress ptvAddress) {
+    if (ptvAddress == null) {
+      return null;
+    }
+    
+    Address result = new Address();
+    result.setType(null);
+    result.setPostalCode(ptvAddress.getPostalCode());
+    result.setPostOffice(ptvAddress.getPostOffice());
+    result.setPostOfficeBox(ptvAddress.getPostOfficeBox());
+    result.setMunicipality(ptvAddress.getMunicipality());
+    result.setCountry(ptvAddress.getCountry());
+    result.setQualifier(ptvAddress.getQualifier());
+    result.setStreetAddress(translateLanguageItems(ptvAddress.getStreetAddress()));
+    result.setAdditionalInformations(translateLanguageItems(ptvAddress.getAdditionalInformations()));
     
     return result;
   }
@@ -213,7 +305,7 @@ public class PtvTranslator implements Serializable {
     }
     
     OrganizationEmail result = new OrganizationEmail();
-    result.setDescriptions(translateLangaugeItems(ptvEmailAddress.getDescriptions()));
+    result.setDescriptions(translateLanguageItems(ptvEmailAddress.getDescriptions()));
     result.setEmail(ptvEmailAddress.getEmail());
     
     return result;
@@ -269,7 +361,7 @@ public class PtvTranslator implements Serializable {
     result.setCoverageType(service.getServiceChargeType());
     result.setMunicipalities(service.getMunicipalities());
     result.setWebPages(translateWebPages(service.getWebPages()));
-    result.setRequirements(translateLangaugeItems(service.getRequirements()));
+    result.setRequirements(translateLanguageItems(service.getRequirements()));
     result.setPublishingStatus(service.getPublishingStatus());
     result.setChargeType(service.getServiceChargeType());
     result.setAdditionalInformations(translateLocalizedListItems(service.getServiceAdditionalInformations()));
@@ -297,7 +389,7 @@ public class PtvTranslator implements Serializable {
     result.setCoverageType(service.getServiceChargeType());
     result.setMunicipalities(service.getMunicipalities());
     result.setWebPages(translateWebPages(service.getWebPages()));
-    result.setRequirements(translateLangaugeItems(service.getRequirements()));
+    result.setRequirements(translateLanguageItems(service.getRequirements()));
     result.setPublishingStatus(service.getPublishingStatus());
     result.setChargeType(service.getServiceChargeType());
     result.setAdditionalInformations(translateLocalizedListItems(service.getServiceAdditionalInformations()));
@@ -321,4 +413,240 @@ public class PtvTranslator implements Serializable {
     
     return result;
   }
+
+  public ElectronicChannel translateElectronicChannel(VmOpenApiElectronicChannel ptvElectronicChannel) {
+    if (ptvElectronicChannel == null) {
+      return null;
+    }
+    
+    ElectronicChannel result = new ElectronicChannel();
+    result.setId(ptvElectronicChannel.getId());
+    result.setType(ptvElectronicChannel.getServiceChannelType());
+    result.setOrganizationId(ptvElectronicChannel.getOrganizationId());
+    result.setNames(translateLocalizedListItems(ptvElectronicChannel.getServiceChannelNames()));
+    result.setDescriptions(translateLocalizedListItems(ptvElectronicChannel.getServiceChannelDescriptions()));
+    result.setSignatureQuantity(ptvElectronicChannel.getSignatureQuantity());
+    result.setRequiresSignature(ptvElectronicChannel.getRequiresSignature());
+    result.setRequiresAuthentication(ptvElectronicChannel.getRequiresAuthentication());
+    result.setUrls(translateLanguageItems(ptvElectronicChannel.getUrls()));
+    result.setLanguages(ptvElectronicChannel.getLanguages());
+    result.setWebPages(translateWebPages(ptvElectronicChannel.getWebPages()));
+    result.setPublishingStatus(ptvElectronicChannel.getPublishingStatus());
+    result.setSupportContacts(translateSupports(ptvElectronicChannel.getSupportContacts()));
+    result.setAttachments(translateAttachmentsWithType(ptvElectronicChannel.getAttachments()));
+    result.setServiceHours(translateServiceHours(ptvElectronicChannel.getServiceHours()));
+
+    return result;
+  }
+  
+  
+  private Support translateSupport(VmOpenApiSupport ptvSupport) {
+    if (ptvSupport == null) {
+      return null;
+    }
+    
+    Support result = new Support();
+    result.setEmail(ptvSupport.getEmail());
+    result.setPhone(ptvSupport.getPhone());
+    result.setPhoneChargeDescription(ptvSupport.getPhoneChargeDescription());
+    result.setLanguage(ptvSupport.getLanguage());
+    result.setServiceChargeTypes(ptvSupport.getServiceChargeTypes());
+
+    return result;
+  }
+  
+  private Attachment translateAttachment(VmOpenApiAttachmentWithType ptvAttachment) {
+    if (ptvAttachment == null) {
+      return null;
+    }
+    
+    Attachment result = new Attachment();
+    result.setType(ptvAttachment.getType());
+    result.setName(ptvAttachment.getName());
+    result.setDescription(ptvAttachment.getDescription());
+    result.setUrl(ptvAttachment.getUrl());
+    result.setLanguage(ptvAttachment.getLanguage());
+
+    return result;
+  }
+  
+  private Attachment translateAttachment(VmOpenApiAttachment ptvAttachment) {
+    if (ptvAttachment == null) {
+      return null;
+    }
+    
+    Attachment result = new Attachment();
+    result.setType(null);
+    result.setName(ptvAttachment.getName());
+    result.setDescription(ptvAttachment.getDescription());
+    result.setUrl(ptvAttachment.getUrl());
+    result.setLanguage(ptvAttachment.getLanguage());
+
+    return result;
+  }
+  
+  private void translateServiceHour(List<ServiceHour> result, VmOpenApiServiceHour ptvServiceHour) {
+    boolean[] dayBools = {
+      ptvServiceHour.getMonday(),
+      ptvServiceHour.getTuesday(),
+      ptvServiceHour.getWednesday(),
+      ptvServiceHour.getThursday(),
+      ptvServiceHour.getFriday(),
+      ptvServiceHour.getSaturday(),
+      ptvServiceHour.getSunday()
+    };
+   
+    int dayIndex = 0;
+    List<Integer> days = new ArrayList<>();
+    boolean currentOpen = dayBools[0];
+   
+    while (dayIndex < dayBools.length) {
+      if ((dayBools[dayIndex] != currentOpen) && (!days.isEmpty())) {
+        result.add(createServiceHourObject(ptvServiceHour, days, currentOpen));
+        days.clear();
+        currentOpen = dayBools[dayIndex];
+      }
+     
+      days.add((dayIndex + 1) % 7);
+      dayIndex++;
+    }
+   
+    if (!days.isEmpty()) {
+      result.add(createServiceHourObject(ptvServiceHour, days, currentOpen));
+    }
+  }
+ 
+  private ServiceHour createServiceHourObject(VmOpenApiServiceHour ptvServiceHour, List<Integer> days, boolean currentOpen) {
+    ServiceHour serviceHour = new ServiceHour();
+    ArrayList<Integer> openDays = new ArrayList<>(days);
+   
+    serviceHour.setDays(openDays);
+    if (currentOpen) {
+      serviceHour.setOpens(ptvServiceHour.getOpens());
+      serviceHour.setCloses(ptvServiceHour.getCloses());
+    }
+   
+    serviceHour.setStatus(currentOpen ? "OPEN": "CLOSED");
+    serviceHour.setType(ptvServiceHour.getServiceHourType());
+    serviceHour.setValidFrom(toOffsetDateTime(ptvServiceHour.getValidFrom()));
+    serviceHour.setValidTo(toOffsetDateTime(ptvServiceHour.getValidTo()));
+    return serviceHour;
+  }
+
+  public ServiceLocationChannel translateServiceLocationChannel(VmOpenApiServiceLocationChannel ptvServiceLocationChannel) {
+    if (ptvServiceLocationChannel == null) {
+      return null;
+    }
+    
+    ServiceLocationChannel result = new ServiceLocationChannel();
+    result.setId(ptvServiceLocationChannel.getId());
+    result.setType(ptvServiceLocationChannel.getServiceChannelType());
+    result.setOrganizationId(ptvServiceLocationChannel.getOrganizationId());
+    result.setNames(translateLocalizedListItems(ptvServiceLocationChannel.getServiceChannelNames()));
+    result.setDescriptions(translateLocalizedListItems(ptvServiceLocationChannel.getServiceChannelDescriptions()));
+    result.setServiceAreaRestricted(ptvServiceLocationChannel.getServiceAreaRestricted());
+    result.setSupportContacts(translateSupports(ptvServiceLocationChannel.getSupportContacts()));
+    result.setEmail(ptvServiceLocationChannel.getEmail());
+    result.setPhone(ptvServiceLocationChannel.getPhone());
+    result.setLanguages(ptvServiceLocationChannel.getLanguages());
+    result.setFax(ptvServiceLocationChannel.getFax());
+    result.setLatitude(ptvServiceLocationChannel.getLatitude());
+    result.setLongitude(ptvServiceLocationChannel.getLongitude());
+    result.setCoordinateSystem(ptvServiceLocationChannel.getCoordinateSystem());
+    result.setCoordinatesSetManually(ptvServiceLocationChannel.getCoordinatesSetManually());
+    result.setPhoneServiceCharge(ptvServiceLocationChannel.getPhoneServiceCharge());
+    result.setWebPages(translateWebPages(ptvServiceLocationChannel.getWebPages()));
+    result.setServiceAreas(ptvServiceLocationChannel.getServiceAreas());
+    result.setPhoneChargeDescriptions(translateLanguageItems(ptvServiceLocationChannel.getPhoneChargeDescriptions()));
+    result.setAddresses(translateAddresses(ptvServiceLocationChannel.getAddresses()));
+    result.setChargeTypes(ptvServiceLocationChannel.getServiceChargeTypes());
+    result.setServiceHours(translateServiceHours(ptvServiceLocationChannel.getServiceHours()));
+    result.setPublishingStatus(ptvServiceLocationChannel.getPublishingStatus());
+    
+    return result;
+  }
+
+  public PrintableFormChannel translatePrintableFormChannel(VmOpenApiPrintableFormChannel ptvPrintableFormChannel) {
+    if (ptvPrintableFormChannel == null) {
+      return null;
+    }
+    
+    PrintableFormChannel result = new PrintableFormChannel();
+    
+    result.setId(ptvPrintableFormChannel.getId());
+    result.setType(ptvPrintableFormChannel.getServiceChannelType());
+    result.setOrganizationId(ptvPrintableFormChannel.getOrganizationId());
+    result.setNames(translateLocalizedListItems(ptvPrintableFormChannel.getServiceChannelNames()));
+    result.setDescriptions(translateLocalizedListItems(ptvPrintableFormChannel.getServiceChannelDescriptions()));
+    result.setFormIdentifier(ptvPrintableFormChannel.getFormIdentifier());
+    result.setFormReceiver(ptvPrintableFormChannel.getFormReceiver());
+    result.setSupportContacts(translateSupports(ptvPrintableFormChannel.getSupportContacts()));
+    result.setDeliveryAddress(translateAddress(ptvPrintableFormChannel.getDeliveryAddress()));
+    result.setChannelUrls(translateLocalizedListItems(ptvPrintableFormChannel.getChannelUrls()));
+    result.setLanguages(ptvPrintableFormChannel.getLanguages());
+    result.setDeliveryAddressDescriptions(translateLanguageItems( ptvPrintableFormChannel.getDeliveryAddressDescriptions()));
+    result.setAttachments(translateAttachmentsWithType(ptvPrintableFormChannel.getAttachments()));
+    result.setWebPages(translateWebPages(ptvPrintableFormChannel.getWebPages()));
+    result.setServiceHours(translateServiceHours(ptvPrintableFormChannel.getServiceHours()));
+    result.setPublishingStatus(ptvPrintableFormChannel.getPublishingStatus());
+    
+    return result;
+  }
+
+  public PhoneChannel translatePhoneChannel(VmOpenApiPhoneChannel ptvPhoneChannel) {
+    if (ptvPhoneChannel == null) {
+      return null;
+    }
+    
+    PhoneChannel result = new PhoneChannel();
+    
+    result.setId(ptvPhoneChannel.getId());
+    result.setType(ptvPhoneChannel.getServiceChannelType());
+    result.setOrganizationId(ptvPhoneChannel.getOrganizationId());
+    result.setNames(translateLocalizedListItems(ptvPhoneChannel.getServiceChannelNames()));
+    result.setDescriptions(translateLocalizedListItems(ptvPhoneChannel.getServiceChannelDescriptions()));
+    result.setPhoneType(ptvPhoneChannel.getPhoneType());
+    result.setChargeTypes(ptvPhoneChannel.getServiceChargeTypes());
+    result.setSupportContacts(translateSupports(ptvPhoneChannel.getSupportContacts()));
+    result.setPhoneNumbers(translateLanguageItems(ptvPhoneChannel.getPhoneNumbers()));
+    result.setLanguages(ptvPhoneChannel.getLanguages());
+    result.setPhoneChargeDescriptions(translateLanguageItems(ptvPhoneChannel.getPhoneChargeDescriptions()));
+    result.setWebPages(translateWebPages(ptvPhoneChannel.getWebPages()));
+    result.setServiceHours(translateServiceHours(ptvPhoneChannel.getServiceHours()));
+    result.setPublishingStatus(ptvPhoneChannel.getPublishingStatus());
+    
+    return result;
+  }
+
+  public WebPageChannel translateWebPageChannel(VmOpenApiWebPageChannel ptvWebPageChannel) {
+    if (ptvWebPageChannel == null) {
+      return null;
+    }
+    
+    WebPageChannel result = new WebPageChannel();
+    
+    result.setId(ptvWebPageChannel.getId());
+    result.setType(ptvWebPageChannel.getServiceChannelType());
+    result.setOrganizationId(ptvWebPageChannel.getOrganizationId());
+    result.setNames(translateLocalizedListItems(ptvWebPageChannel.getServiceChannelNames()));
+    result.setDescriptions(translateLocalizedListItems(ptvWebPageChannel.getServiceChannelDescriptions()));
+    result.setUrls(translateLanguageItems(ptvWebPageChannel.getUrls()));
+    result.setAttachments(translateAttachments(ptvWebPageChannel.getAttachments()));
+    result.setSupportContacts(translateSupports(ptvWebPageChannel.getSupportContacts()));
+    result.setLanguages(ptvWebPageChannel.getLanguages());
+    result.setWebPages(translateWebPages(ptvWebPageChannel.getWebPages()));
+    result.setServiceHours(translateServiceHours(ptvWebPageChannel.getServiceHours()));
+    result.setPublishingStatus(ptvWebPageChannel.getPublishingStatus());
+
+    return result;
+  }
+
+  private OffsetDateTime toOffsetDateTime(LocalDateTime localeDateTime) {
+    if (localeDateTime == null) {
+      return null;
+    }
+    
+    return localeDateTime.atOffset(ZoneOffset.UTC);
+  }
+  
 }

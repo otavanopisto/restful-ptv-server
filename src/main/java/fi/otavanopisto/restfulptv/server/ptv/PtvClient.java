@@ -2,6 +2,7 @@ package fi.otavanopisto.restfulptv.server.ptv;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -103,6 +104,11 @@ public class PtvClient extends fi.otavanopisto.ptv.client.ApiClient {
       OffsetDateTime offsetDateTime = (OffsetDateTime) value;
       ZonedDateTime utcWithoutSeconds = offsetDateTime.atZoneSameInstant(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
       return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(utcWithoutSeconds);
+    } 
+    
+    if (value instanceof LocalDateTime) {
+      LocalDateTime localDateTime = (LocalDateTime) value;
+      return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(localDateTime.truncatedTo(ChronoUnit.SECONDS));
     } 
     
     return String.valueOf(value);

@@ -1,4 +1,4 @@
-package fi.otavanopisto.restfulptv.server.services;
+package fi.otavanopisto.restfulptv.server.servicechannels;
 
 import java.time.LocalDateTime;
 import java.util.logging.Logger;
@@ -19,7 +19,7 @@ import fi.otavanopisto.restfulptv.server.schedulers.IdUpdater;
 
 @Singleton
 @SuppressWarnings ("squid:S3306")
-public class ServiceIdUpdater extends IdUpdater {
+public class ServiceChannelIdUpdater extends IdUpdater {
   
   private static final int TIMER_INTERVAL = 5000;
   private static final int STANDARD_INTERVAL = 10;
@@ -31,7 +31,7 @@ public class ServiceIdUpdater extends IdUpdater {
   private PtvApi ptvApi;
   
   @Inject
-  private Event<ServiceIdUpdateRequest> updateRequest;
+  private Event<ServiceChannelIdUpdateRequest> updateRequest;
   
   @Resource
   private TimerService timerService;
@@ -44,7 +44,7 @@ public class ServiceIdUpdater extends IdUpdater {
   
   @Override
   public String getName() {
-    return "services";
+    return "serviceChannels";
   }
   
   @Override
@@ -84,17 +84,17 @@ public class ServiceIdUpdater extends IdUpdater {
     boolean hasMore = false;
     
     if (pageCount > 0) {
-      logger.fine(String.format("Updating services page %d / %d", page + 1, pageCount));
+      logger.fine(String.format("Updating serviceChannels page %d / %d", page + 1, pageCount));
     } else {
-      logger.fine(String.format("Updating services page %d", page + 1));
+      logger.fine(String.format("Updating serviceChannels page %d", page + 1));
     }
     
-    ApiResponse<VmOpenApiGuidPage> response = ptvApi.getServiceApi().apiServiceGet(null, page);
+    ApiResponse<VmOpenApiGuidPage> response = ptvApi.getServiceChannelApi().apiServiceChannelGet(null, page);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
       
       for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new ServiceIdUpdateRequest(guid, false));
+        updateRequest.fire(new ServiceChannelIdUpdateRequest(guid, false));
         discoverCount++;
       }
       
@@ -102,10 +102,10 @@ public class ServiceIdUpdater extends IdUpdater {
       hasMore = pageCount > page + 1;
  
       if (discoverCount > 0) {
-        logger.info(String.format("Discovered %d service ids", discoverCount));
+        logger.info(String.format("Discovered %d serviceChannel ids", discoverCount));
       }
     } else {
-      logger.severe(String.format("Failed to update service ids from PTV (%d: %s)", response.getStatus(), response.getMessage()));
+      logger.severe(String.format("Failed to update serviceChannel ids from PTV (%d: %s)", response.getStatus(), response.getMessage()));
     }
     
     if (hasMore) {
@@ -117,26 +117,26 @@ public class ServiceIdUpdater extends IdUpdater {
 
   private void discoverPriorityIds() {
     int discoverCount = 0;
-    logger.fine("Updating priority services");
+    logger.info("Updating priority serviceChannels");
     
-    ApiResponse<VmOpenApiGuidPage> response = ptvApi.getServiceApi().apiServiceGet(priortyScanTime, 0);
+    ApiResponse<VmOpenApiGuidPage> response = ptvApi.getServiceChannelApi().apiServiceChannelGet(priortyScanTime, 0);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
       
       for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new ServiceIdUpdateRequest(guid, true));
+        updateRequest.fire(new ServiceChannelIdUpdateRequest(guid, true));
         discoverCount++;
       }
       
       pageCount = pageData.getPageCount();
       
       if (discoverCount > 0) {
-        logger.info(String.format("Discovered %d priority services", discoverCount));
+        logger.info(String.format("Discovered %d priority serviceChannels", discoverCount));
       }
       
       priortyScanTime = LocalDateTime.now();
     } else {
-      logger.severe(String.format("Failed to update priority service ids from PTV (%d: %s)", response.getStatus(), response.getMessage()));
+      logger.severe(String.format("Failed to update priority serviceChannel ids from PTV (%d: %s)", response.getStatus(), response.getMessage()));
     }
   }
    

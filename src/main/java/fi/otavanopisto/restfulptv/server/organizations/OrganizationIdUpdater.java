@@ -1,6 +1,6 @@
 package fi.otavanopisto.restfulptv.server.organizations;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -40,7 +40,7 @@ public class OrganizationIdUpdater extends IdUpdater {
   private int page;
   private int pageCount;
   private int counter;
-  private OffsetDateTime priortyScanTime;
+  private LocalDateTime priortyScanTime;
   
   @Override
   public String getName() {
@@ -49,7 +49,7 @@ public class OrganizationIdUpdater extends IdUpdater {
   
   @Override
   public void startTimer() {
-    priortyScanTime = OffsetDateTime.now();
+    priortyScanTime = LocalDateTime.now();
     stopped = false;
     counter = 0;
     startTimer(TIMER_INTERVAL);
@@ -84,9 +84,9 @@ public class OrganizationIdUpdater extends IdUpdater {
     boolean hasMore = false;
     
     if (pageCount > 0) {
-      logger.info(String.format("Updating organizations page %d / %d", page + 1, pageCount));
+      logger.fine(String.format("Updating organizations page %d / %d", page + 1, pageCount));
     } else {
-      logger.info(String.format("Updating organizations page %d", page + 1));
+      logger.fine(String.format("Updating organizations page %d", page + 1));
     }
     
     ApiResponse<VmOpenApiGuidPage> response = ptvApi.getOrganizationApi().apiOrganizationGet(null, page);
@@ -134,7 +134,7 @@ public class OrganizationIdUpdater extends IdUpdater {
         logger.info(String.format("Discovered %d priority organizations", discoverCount));
       }
       
-      priortyScanTime = OffsetDateTime.now();
+      priortyScanTime = LocalDateTime.now();
     } else {
       logger.severe(String.format("Failed to update priority organization ids from PTV (%d: %s)", response.getStatus(), response.getMessage()));
     }
