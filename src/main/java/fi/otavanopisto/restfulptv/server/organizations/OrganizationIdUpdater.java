@@ -15,10 +15,11 @@ import javax.inject.Inject;
 import fi.otavanopisto.ptv.client.ApiResponse;
 import fi.otavanopisto.ptv.client.model.VmOpenApiGuidPage;
 import fi.otavanopisto.restfulptv.server.ptv.PtvApi;
+import fi.otavanopisto.restfulptv.server.schedulers.IdUpdater;
 
 @Singleton
 @SuppressWarnings ("squid:S3306")
-public class OrganizationIdUpdater {
+public class OrganizationIdUpdater extends IdUpdater {
   
   private static final int TIMER_INTERVAL = 5000;
   private static final int STANDARD_INTERVAL = 10;
@@ -41,21 +42,28 @@ public class OrganizationIdUpdater {
   private int counter;
   private OffsetDateTime priortyScanTime;
   
+  @Override
+  public String getName() {
+    return "organizations";
+  }
+  
+  @Override
   public void startTimer() {
     priortyScanTime = OffsetDateTime.now();
     stopped = false;
     counter = 0;
     startTimer(TIMER_INTERVAL);
   }
+
+  @Override
+  public void stopTimer() {
+    stopped = true;
+  }
   
   private void startTimer(int duration) {
     TimerConfig timerConfig = new TimerConfig();
     timerConfig.setPersistent(false);
     timerService.createSingleActionTimer(duration, timerConfig);
-  }
-
-  public void stopTimer() {
-    stopped = true;
   }
   
   @Timeout

@@ -11,16 +11,19 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import fi.otavanopisto.ptv.client.ApiResponse;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganization;
 import fi.otavanopisto.restfulptv.server.ptv.PtvApi;
+import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
 
+@ApplicationScoped
 @Singleton
 @SuppressWarnings ("squid:S3306")
-public class OrganizationEntityUpdater {
+public class OrganizationEntityUpdater extends EntityUpdater {
   
   private static final int TIMER_INTERVAL = 1000;
 
@@ -44,21 +47,37 @@ public class OrganizationEntityUpdater {
     queue = new ArrayList<>();
   }
   
-  public void startTimer(int duration) {
+  @Override
+  public String getName() {
+    return "organizations";
+  }
+  
+  @Override
+  public void startTimer() {
+    startTimer(TIMER_INTERVAL);
+  }
+  
+  private void startTimer(int duration) {
     stopped = false;
     TimerConfig timerConfig = new TimerConfig();
     timerConfig.setPersistent(false);
     timerService.createSingleActionTimer(duration, timerConfig);
   }
+
+  @Override
+  public void stopTimer() {
+    stopped = true;
+  }
   
   public void onOrganizationIdUpdateRequest(@Observes OrganizationIdUpdateRequest event) {
     if (!stopped) {
-      queue.remove(event.getId());
-      
       if (event.isPriority()) {
+        queue.remove(event.getId());
         queue.add(0, event.getId());
       } else {
-        queue.add(event.getId());
+        if (!queue.contains(event.getId())) {
+          queue.add(event.getId());
+        }
       }
     }
   }
@@ -81,10 +100,6 @@ public class OrganizationEntityUpdater {
       
       startTimer(TIMER_INTERVAL);
     }
-  }
-
-  public void stopTimer() {
-    stopped = true;
   }
    
 }

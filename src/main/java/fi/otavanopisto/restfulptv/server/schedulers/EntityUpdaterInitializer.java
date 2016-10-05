@@ -1,39 +1,45 @@
 package fi.otavanopisto.restfulptv.server.schedulers;
 
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import com.bertoncelj.wildflysingletonservice.Start;
 import com.bertoncelj.wildflysingletonservice.Stop;
 
-import fi.otavanopisto.restfulptv.server.organizations.OrganizationEntityUpdater;
-
 @ApplicationScoped
 @SuppressWarnings ("squid:S3306")
 public class EntityUpdaterInitializer {
-  
-  private static final int TIMER_INITIAL = 1000;
   
   @Inject
   private Logger logger;
   
   @Inject
-  private OrganizationEntityUpdater entityUpdater;
-
+  @Any
+  private Instance<EntityUpdater> entityUpdaters;
+  
   @Start
   public void start() {
-    logger.info("Starting entity updater");
-    entityUpdater.startTimer(TIMER_INITIAL);
-    logger.info("Started entity updater");
+    Iterator<EntityUpdater> updaters = entityUpdaters.iterator();
+    while (updaters.hasNext()) {
+      EntityUpdater updater = updaters.next();
+      logger.info(String.format("Starting entity updater %s", updater.getName()));
+      updater.startTimer();
+    }
   }
   
   @Stop
   public void stop() {
-    logger.info("Stopping entity updater");
-    entityUpdater.stopTimer();
-    logger.info("Stopped entity updater");
+    Iterator<EntityUpdater> updaters = entityUpdaters.iterator();
+    while (updaters.hasNext()) {
+      EntityUpdater updater = updaters.next();
+      logger.info(String.format("Stopping entity updater %s", updater.getName()));
+      updater.stopTimer();
+    }
   }
    
 }
