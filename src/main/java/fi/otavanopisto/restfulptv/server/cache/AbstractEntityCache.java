@@ -37,7 +37,6 @@ public abstract class AbstractEntityCache <T> implements Serializable {
    * Returns cached entity by id
    * 
    * @param id entity id
-   * @param type result type
    * @return cached api reposponse or null if non found
    */
   public T get(String id) {

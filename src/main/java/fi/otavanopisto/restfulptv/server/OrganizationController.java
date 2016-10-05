@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import fi.otavanopisto.ptv.client.model.VmOpenApiOrganization;
 import fi.otavanopisto.restfulptv.server.organizations.OrganizationCache;
 import fi.otavanopisto.restfulptv.server.rest.model.Organization;
 
@@ -24,16 +23,8 @@ public class OrganizationController implements Serializable {
   @Inject
   private OrganizationCache organizationCache;
 
-  @Inject
-  private PtvTranslator ptvTranslator;
-
   public Organization findOrganizationById(String id) {
-    VmOpenApiOrganization organization = organizationCache.get(id);
-    if (organization == null) {
-      return null;
-    }
-    
-    return ptvTranslator.translateOrganization(organization); 
+    return organizationCache.get(id);
   }
   
   public List<Organization> listOrganizations(Long firstResult, Long maxResults) {

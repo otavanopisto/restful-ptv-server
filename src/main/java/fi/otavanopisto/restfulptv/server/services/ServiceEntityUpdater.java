@@ -17,7 +17,9 @@ import javax.inject.Inject;
 
 import fi.otavanopisto.ptv.client.ApiResponse;
 import fi.otavanopisto.ptv.client.model.IVmOpenApiService;
+import fi.otavanopisto.restfulptv.server.PtvTranslator;
 import fi.otavanopisto.restfulptv.server.ptv.PtvApi;
+import fi.otavanopisto.restfulptv.server.rest.model.Service;
 import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
 
 @ApplicationScoped
@@ -35,6 +37,9 @@ public class ServiceEntityUpdater extends EntityUpdater {
   
   @Inject
   private ServiceCache serviceCache;
+  
+  @Inject
+  private PtvTranslator ptvTranslator;
   
   @Resource
   private TimerService timerService;
@@ -93,14 +98,22 @@ public class ServiceEntityUpdater extends EntityUpdater {
         
         ApiResponse<IVmOpenApiService> response = ptvApi.getServiceApi().apiServiceByIdGet(entityId);
         if (response.isOk()) {
-          serviceCache.put(entityId, response.getResponse());
+          cacheResponse(entityId, response.getResponse());
         } else {
           logger.warning(String.format("Service %s caching failed on [%d] %s", entityId, response.getStatus(), response.getMessage()));
         }
-        
       }
       
       startTimer(TIMER_INTERVAL);
+    }
+  }
+
+  private void cacheResponse(String entityId, IVmOpenApiService ptvService) {
+    Service service = ptvTranslator.translateService(ptvService);
+    if (service != null) {
+      serviceCache.put(entityId, service);
+    } else {
+      logger.warning(String.format("Failed to translate ptvService %s",  ptvService.getId()));
     }
   }
    

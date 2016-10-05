@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import fi.otavanopisto.ptv.client.model.IVmOpenApiService;
 import fi.otavanopisto.restfulptv.server.rest.model.Service;
 import fi.otavanopisto.restfulptv.server.services.ServiceCache;
 
@@ -24,16 +23,8 @@ public class ServiceController implements Serializable {
   @Inject
   private ServiceCache serviceCache;
 
-  @Inject
-  private PtvTranslator ptvTranslator;
-
   public Service findServiceById(String id) {
-    IVmOpenApiService service = serviceCache.get(id);
-    if (service == null) {
-      return null;
-    }
-    
-    return ptvTranslator.translateService(service); 
+    return serviceCache.get(id);
   }
   
   public List<Service> listServices(Long firstResult, Long maxResults) {
