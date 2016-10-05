@@ -1,7 +1,10 @@
 package fi.otavanopisto.restfulptv.server;
 
+import java.util.List;
+
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import fi.otavanopisto.restfulptv.server.rest.OrganizationsApi;
@@ -16,9 +19,15 @@ import fi.otavanopisto.restfulptv.server.rest.model.OrganizationService;
  */
 @RequestScoped
 @Stateful
+@SuppressWarnings ("squid:S3306")
 public class OrganizationsApiImpl extends OrganizationsApi {
+
+  private static final String NOT_FOUND = "Not found";
   
   private static final String NOT_IMPLEMENTED = "Not implemented";
+  
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public Response createOrganization(Organization body) {
@@ -32,7 +41,13 @@ public class OrganizationsApiImpl extends OrganizationsApi {
 
   @Override
   public Response findOrganization(String organizationId) {
-    return createNotImplemented(NOT_IMPLEMENTED);
+    Organization organization = organizationController.findOrganizationById(organizationId);
+    if (organization == null) {
+      return createNotFound(NOT_FOUND);
+    }
+    
+    return Response.ok(organization)
+      .build();
   }
 
   @Override
@@ -47,7 +62,9 @@ public class OrganizationsApiImpl extends OrganizationsApi {
 
   @Override
   public Response listOrganizations(Long firstResult, Long maxResults) {
-    return createNotImplemented(NOT_IMPLEMENTED);
+    List<Organization> organizations = organizationController.listOrganizations(firstResult, maxResults);
+    return Response.ok(organizations)
+      .build();
   }
 
   @Override
@@ -59,5 +76,6 @@ public class OrganizationsApiImpl extends OrganizationsApi {
   public Response updateOrganizationService(String organizationId, String organizationServiceId, OrganizationService body) {
     return createNotImplemented(NOT_IMPLEMENTED);
   }
+  
 }
 

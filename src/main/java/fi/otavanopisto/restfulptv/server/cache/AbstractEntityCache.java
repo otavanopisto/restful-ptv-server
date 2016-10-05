@@ -1,6 +1,9 @@
 package fi.otavanopisto.restfulptv.server.cache;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -11,9 +14,8 @@ import javax.inject.Inject;
 import org.infinispan.Cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fi.otavanopisto.restfulptv.server.http.GenericHttpClient.ResultType;
 
 /**
  * Abstract base cache for all PTV entity caches
@@ -22,7 +24,9 @@ import fi.otavanopisto.restfulptv.server.http.GenericHttpClient.ResultType;
  * @author Heikki Kurhinen
  */
 @SuppressWarnings ("squid:S3306")
-public abstract class AbstractEntityCache <T> {
+public abstract class AbstractEntityCache <T> implements Serializable {
+  
+  private static final long serialVersionUID = -2187920247572569941L;
   
   @Inject
   private Logger logger;
@@ -36,12 +40,18 @@ public abstract class AbstractEntityCache <T> {
    * @param type result type
    * @return cached api reposponse or null if non found
    */
-  public T get(String id, ResultType<T> type) {
+  public T get(String id) {
     Cache<String, String> cache = getCache();
     if (cache.containsKey(id)) {
+      String rawData = cache.get(id);
+      if (rawData == null) {
+        logger.log(Level.SEVERE, String.format("Could not find data for id %s", id));
+        return null;
+      }
+      
       ObjectMapper objectMapper = new ObjectMapper();
       try {
-        return objectMapper.readValue(cache.get(id), type.getTypeReference());
+        return objectMapper.readValue(rawData, getTypeReference());
       } catch (IOException e) {
         cache.remove(id);
         logger.log(Level.SEVERE, "Invalid serizalized object found from the cache. Dropped object", e);
@@ -85,6 +95,20 @@ public abstract class AbstractEntityCache <T> {
   public List<String> getIds() {
     Cache<String, String> cache = getCache();
     return new ArrayList<>(cache.keySet());
+  }
+  
+  private TypeReference<T> getTypeReference() {    
+    Type superClass = getClass().getGenericSuperclass();
+    if (superClass instanceof ParameterizedType) {
+      final Type parameterizedType = ((ParameterizedType) superClass).getActualTypeArguments()[0];
+      return new TypeReference<T>() {
+        @Override
+        public Type getType() {
+          return parameterizedType;
+        }
+      };
+    }
+    return null;
   }
   
 }
