@@ -1,7 +1,10 @@
 package fi.otavanopisto.restfulptv.server;
 
+import java.util.List;
+
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import fi.otavanopisto.restfulptv.server.rest.ServicesApi;
@@ -20,9 +23,14 @@ import fi.otavanopisto.restfulptv.server.rest.model.WebPageChannel;
  */
 @RequestScoped
 @Stateful
+@SuppressWarnings ("squid:S3306")
 public class ServicesApiImpl extends ServicesApi {
-  
+
+  private static final String NOT_FOUND = "Not found";
   private static final String NOT_IMPLEMENTED = "Not implemented";
+  
+  @Inject
+  private ServiceController serviceController;
 
   @Override
   public Response createService(Service body) {
@@ -56,7 +64,20 @@ public class ServicesApiImpl extends ServicesApi {
 
   @Override
   public Response findService(String serviceId) {
-    return createNotImplemented(NOT_IMPLEMENTED);
+    Service service = serviceController.findServiceById(serviceId);
+    if (service == null) {
+      return createNotFound(NOT_FOUND);
+    }
+    
+    return Response.ok(service)
+      .build();
+  }
+
+  @Override
+  public Response listServices(Long firstResult, Long maxResults) {
+    List<Service> services = serviceController.listServices(firstResult, maxResults);
+    return Response.ok(services)
+      .build();
   }
 
   @Override
@@ -106,11 +127,6 @@ public class ServicesApiImpl extends ServicesApi {
 
   @Override
   public Response listServiceWebPageChannels(String serviceId, Long firstResult, Long maxResults) {
-    return createNotImplemented(NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public Response listServices(Long firstResult, Long maxResults) {
     return createNotImplemented(NOT_IMPLEMENTED);
   }
 
