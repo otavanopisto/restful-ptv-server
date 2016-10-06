@@ -30,7 +30,7 @@ import fi.otavanopisto.restfulptv.server.servicechannels.ServiceChannelType;
 @SuppressWarnings ("squid:S3306")
 public class ServiceEntityUpdater extends EntityUpdater {
   
-  private static final int TIMER_INTERVAL = 1000;
+  private static final int TIMER_INTERVAL = 5000;
 
   @Inject
   private Logger logger;

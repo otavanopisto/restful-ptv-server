@@ -39,7 +39,7 @@ import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
 @SuppressWarnings ("squid:S3306")
 public class ServiceChannelEntityUpdater extends EntityUpdater {
   
-  private static final int TIMER_INTERVAL = 1000;
+  private static final int TIMER_INTERVAL = 5000;
 
   @Inject
   private Logger logger;
@@ -179,7 +179,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
   }
 
   private void cacheElectronicChannel(VmOpenApiElectronicChannel ptvElectronicChannel) {
-    logger.info(String.format("Updating electronic service channel %s", ptvElectronicChannel.getId()));
+    logger.fine(String.format("Updating electronic service channel %s", ptvElectronicChannel.getId()));
     
     ElectronicChannel electronicChannel = ptvTranslator.translateElectronicChannel(ptvElectronicChannel);
     if (electronicChannel != null) {
@@ -190,7 +190,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
   }
 
   private void cacheServiceLocationChannel(VmOpenApiServiceLocationChannel ptvServiceLocationChannel) {
-    logger.info(String.format("Updating serviceLocation service channel %s", ptvServiceLocationChannel.getId()));
+    logger.fine(String.format("Updating serviceLocation service channel %s", ptvServiceLocationChannel.getId()));
     
     ServiceLocationChannel serviceLocationChannel = ptvTranslator.translateServiceLocationChannel(ptvServiceLocationChannel);
     if (serviceLocationChannel != null) {
@@ -201,7 +201,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
   }
 
   private void cachePrintableFormChannel(VmOpenApiPrintableFormChannel ptvPrintableFormChannel) {
-    logger.info(String.format("Updating printableForm service channel %s", ptvPrintableFormChannel.getId()));
+    logger.fine(String.format("Updating printableForm service channel %s", ptvPrintableFormChannel.getId()));
     
     PrintableFormChannel printableFormChannel = ptvTranslator.translatePrintableFormChannel(ptvPrintableFormChannel);
     if (printableFormChannel != null) {
@@ -212,7 +212,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
   }
 
   private void cachePhoneChannel(VmOpenApiPhoneChannel ptvPhoneChannel) {
-    logger.info(String.format("Updating phone service channel %s", ptvPhoneChannel.getId()));
+    logger.fine(String.format("Updating phone service channel %s", ptvPhoneChannel.getId()));
     
     PhoneChannel phoneChannel = ptvTranslator.translatePhoneChannel(ptvPhoneChannel);
     if (phoneChannel != null) {
@@ -223,7 +223,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
   }
 
   private void cacheWebPageChannel(VmOpenApiWebPageChannel ptvWebPageChannel) {
-    logger.info(String.format("Updating webPage service channel %s", ptvWebPageChannel.getId()));
+    logger.fine(String.format("Updating webPage service channel %s", ptvWebPageChannel.getId()));
     
     WebPageChannel webPageChannel = ptvTranslator.translateWebPageChannel(ptvWebPageChannel);
     if (webPageChannel != null) {
