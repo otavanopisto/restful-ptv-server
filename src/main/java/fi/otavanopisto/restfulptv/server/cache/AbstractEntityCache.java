@@ -29,7 +29,7 @@ public abstract class AbstractEntityCache <T> implements Serializable {
   private static final long serialVersionUID = -2187920247572569941L;
   
   @Inject
-  private Logger logger;
+  private transient Logger logger;
   
   public abstract Cache<String, String> getCache();
   
