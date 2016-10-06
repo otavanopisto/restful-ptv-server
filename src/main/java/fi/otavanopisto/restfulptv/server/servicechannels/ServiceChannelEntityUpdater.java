@@ -21,15 +21,12 @@ import javax.inject.Inject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.otavanopisto.ptv.client.ApiResponse;
-import fi.otavanopisto.ptv.client.ResultType;
 import fi.otavanopisto.ptv.client.model.VmOpenApiElectronicChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiPhoneChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiPrintableFormChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiServiceLocationChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiWebPageChannel;
 import fi.otavanopisto.restfulptv.server.PtvTranslator;
-import fi.otavanopisto.restfulptv.server.ptv.PtvClient;
 import fi.otavanopisto.restfulptv.server.rest.model.ElectronicChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.PhoneChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.PrintableFormChannel;
@@ -48,7 +45,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
   private Logger logger;
   
   @Inject
-  private PtvClient ptvClient;
+  private ServiceChannelResolver serviceChannelResolver;
   
   @Inject
   private ElectronicServiceChannelCache electronicServiceChannelCache;
@@ -123,12 +120,11 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
           logger.warning(String.format("Could not remove %s from queue", entityId));
         }
         
-        String path = String.format("/api/ServiceChannel/%s", entityId);
-        ApiResponse<Map<String, Object>> response = ptvClient.doGETRequest(path, new ResultType<Map<String, Object>>() {}, null, null);
-        if (response.isOk()) {
-          handleResponse(entityId, response);
+        Map<String, Object> serviceChannelData = serviceChannelResolver.loadServiceChannelData(entityId);
+        if (serviceChannelData != null) {
+          handleResponse(entityId, serviceChannelData);
         } else {
-          logger.warning(String.format("Service channel %s caching failed on [%d] %s. Request path was %s", entityId, response.getStatus(), response.getMessage(), path));
+          logger.warning(String.format("Service channel %s caching failed", entityId));
         }
       }
       
@@ -136,21 +132,19 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
     }
   }
 
-  private void handleResponse(String entityId, ApiResponse<Map<String, Object>> response) {
-    Object type = response.getResponse().get("serviceChannelType");
-    if (!(type instanceof String)) {
+  private void handleResponse(String entityId, Map<String, Object> serviceChannelData) {
+    ServiceChannelType type = serviceChannelResolver.resolveServiceChannelType(serviceChannelData);
+    if (type == null) {
       logger.warning(String.format("ServiceChannel %s does not have a type", entityId));
     } else {
       ObjectMapper objectMapper = new ObjectMapper();
       byte[] requestData;
       try {
-        requestData = objectMapper.writeValueAsBytes(response.getResponse());
+        requestData = objectMapper.writeValueAsBytes(serviceChannelData);
       } catch (JsonProcessingException e) {
         logger.log(Level.SEVERE, String.format("Failed to serialize electronic channel %s", entityId), e);
         return;
       }
-
-      logger.info(String.format("Updating service channel type %s", (String) type));
       
       try {
         cacheServiceChannel(type, objectMapper, requestData);
@@ -161,24 +155,25 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
     }
   }
 
-  private void cacheServiceChannel(Object type, ObjectMapper objectMapper, byte[] requestData) throws IOException {
-    switch ((String) type) {
-      case "EChannel":
+  private void cacheServiceChannel(ServiceChannelType type, ObjectMapper objectMapper, byte[] requestData) throws IOException {
+    switch (type) {
+      case ELECTRONIC_CHANNEL:
         cacheElectronicChannel(objectMapper.readValue(requestData, VmOpenApiElectronicChannel.class));
       break;
-      case "ServiceLocation":
+      case SERVICE_LOCATION:
         cacheServiceLocationChannel(objectMapper.readValue(requestData, VmOpenApiServiceLocationChannel.class));
       break;
-      case "PrintableForm":
+      case PRINTABLE_FORM:
         cachePrintableFormChannel(objectMapper.readValue(requestData, VmOpenApiPrintableFormChannel.class));
       break;
-      case "Phone":
+      case PHONE:
         cachePhoneChannel(objectMapper.readValue(requestData, VmOpenApiPhoneChannel.class));
       break;
-      case "WebPage":
+      case WEB_PAGE:
         cacheWebPageChannel(objectMapper.readValue(requestData, VmOpenApiWebPageChannel.class));
       break;
       default:
+        logger.log(Level.SEVERE, String.format("Unknown service channel type %s", type));
       break;
     }
   }

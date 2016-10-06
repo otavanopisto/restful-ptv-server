@@ -32,6 +32,9 @@ public class ServicesApiImpl extends ServicesApi {
   @Inject
   private ServiceController serviceController;
 
+  @Inject
+  private ServiceChannelController serviceChannelController;
+
   @Override
   public Response createService(Service body) {
     return createNotImplemented(NOT_IMPLEMENTED);
@@ -107,27 +110,62 @@ public class ServicesApiImpl extends ServicesApi {
 
   @Override
   public Response listServiceElectronicChannels(String serviceId, Long firstResult, Long maxResults) {
-    return createNotImplemented(NOT_IMPLEMENTED);
+    Service service = serviceController.findServiceById(serviceId);
+    if (service == null) {
+      return createNotFound(NOT_FOUND);
+    }
+    
+    List<ElectronicChannel> channels = serviceChannelController.listElectronicChannels(service.getId(), firstResult, maxResults);
+    return Response.ok(channels)
+      .build();
   }
 
   @Override
   public Response listServicePhoneChannels(String serviceId, Long firstResult, Long maxResults) {
-    return createNotImplemented(NOT_IMPLEMENTED);
+    Service service = serviceController.findServiceById(serviceId);
+    if (service == null) {
+      return createNotFound(NOT_FOUND);
+    }
+    
+    List<PhoneChannel> channels = serviceChannelController.listPhoneChannels(service.getId(), firstResult, maxResults);
+    return Response.ok(channels)
+      .build();
   }
 
   @Override
   public Response listServicePrintableFormChannels(String serviceId, Long firstResult, Long maxResults) {
-    return createNotImplemented(NOT_IMPLEMENTED);
+    Service service = serviceController.findServiceById(serviceId);
+    if (service == null) {
+      return createNotFound(NOT_FOUND);
+    }
+    
+    List<PrintableFormChannel> channels = serviceChannelController.listPrintableFormChannels(service.getId(), firstResult, maxResults);
+    return Response.ok(channels)
+      .build();
   }
 
   @Override
   public Response listServiceServiceLocationChannels(String serviceId, Long firstResult, Long maxResults) {
-    return createNotImplemented(NOT_IMPLEMENTED);
+    Service service = serviceController.findServiceById(serviceId);
+    if (service == null) {
+      return createNotFound(NOT_FOUND);
+    }
+    
+    List<ServiceLocationChannel> channels = serviceChannelController.listServiceLocationChannels(service.getId(), firstResult, maxResults);
+    return Response.ok(channels)
+      .build();
   }
 
   @Override
   public Response listServiceWebPageChannels(String serviceId, Long firstResult, Long maxResults) {
-    return createNotImplemented(NOT_IMPLEMENTED);
+    Service service = serviceController.findServiceById(serviceId);
+    if (service == null) {
+      return createNotFound(NOT_FOUND);
+    }
+    
+    List<WebPageChannel> channels = serviceChannelController.listWebPageChannels(service.getId(), firstResult, maxResults);
+    return Response.ok(channels)
+      .build();
   }
 
   @Override

@@ -2,6 +2,7 @@ package fi.otavanopisto.restfulptv.server.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,8 @@ import fi.otavanopisto.restfulptv.server.PtvTranslator;
 import fi.otavanopisto.restfulptv.server.ptv.PtvApi;
 import fi.otavanopisto.restfulptv.server.rest.model.Service;
 import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
+import fi.otavanopisto.restfulptv.server.servicechannels.ServiceChannelResolver;
+import fi.otavanopisto.restfulptv.server.servicechannels.ServiceChannelType;
 
 @ApplicationScoped
 @Singleton
@@ -36,7 +39,13 @@ public class ServiceEntityUpdater extends EntityUpdater {
   private PtvApi ptvApi;
   
   @Inject
+  private ServiceChannelResolver serviceChannelResolver;
+  
+  @Inject
   private ServiceCache serviceCache;
+
+  @Inject
+  private ServiceChannelsCache serviceChannelsCache;
   
   @Inject
   private PtvTranslator ptvTranslator;
@@ -111,10 +120,43 @@ public class ServiceEntityUpdater extends EntityUpdater {
   private void cacheResponse(String entityId, IVmOpenApiService ptvService) {
     Service service = ptvTranslator.translateService(ptvService);
     if (service != null) {
+      serviceChannelsCache.put(ptvService.getId(), resolveServiceChannelIds(ptvService));
       serviceCache.put(entityId, service);
     } else {
       logger.warning(String.format("Failed to translate ptvService %s",  ptvService.getId()));
     }
+  }
+
+  private ServiceChannelIds resolveServiceChannelIds(IVmOpenApiService ptvService) {
+    ServiceChannelIds channelIds = new ServiceChannelIds();
+    
+    for (String channelId : ptvService.getServiceChannels()) {
+      ServiceChannelType serviceChannelType = serviceChannelResolver.resolveServiceChannelTupe(channelId);
+      if (serviceChannelType != null) {
+        switch (serviceChannelType) {
+          case ELECTRONIC_CHANNEL:
+            channelIds.getElectricChannels().add(channelId);
+          break;
+          case SERVICE_LOCATION:
+            channelIds.getLocationServiceChannels().add(channelId);
+          break;
+          case PRINTABLE_FORM:
+            channelIds.getPrintableFormChannels().add(channelId);
+          break;
+          case PHONE:
+            channelIds.getPhoneChannels().add(channelId);
+          break;
+          case WEB_PAGE:
+            channelIds.getWebPageChannels().add(channelId);
+          break;
+          default:
+            logger.log(Level.SEVERE, String.format("Unknown service channel type %s", serviceChannelType));
+          break;
+        }
+      }
+    }
+    
+    return channelIds;
   }
    
 }
