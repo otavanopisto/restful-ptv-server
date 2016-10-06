@@ -9,6 +9,7 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
@@ -17,10 +18,12 @@ import fi.otavanopisto.ptv.client.model.VmOpenApiGuidPage;
 import fi.otavanopisto.restfulptv.server.ptv.PtvApi;
 import fi.otavanopisto.restfulptv.server.schedulers.IdUpdater;
 
+@ApplicationScoped
 @Singleton
 @SuppressWarnings ("squid:S3306")
 public class OrganizationIdUpdater extends IdUpdater {
   
+  private static final int WARMUP_TIME = 1000 * 10;
   private static final int TIMER_INTERVAL = 5000;
   private static final int STANDARD_INTERVAL = 10;
 
@@ -52,7 +55,7 @@ public class OrganizationIdUpdater extends IdUpdater {
     priortyScanTime = LocalDateTime.now();
     stopped = false;
     counter = 0;
-    startTimer(TIMER_INTERVAL);
+    startTimer(WARMUP_TIME);
   }
 
   @Override
@@ -117,7 +120,7 @@ public class OrganizationIdUpdater extends IdUpdater {
 
   private void discoverPriorityIds() {
     int discoverCount = 0;
-    logger.info("Updating priority organizations");
+    logger.fine("Updating priority organizations");
     
     ApiResponse<VmOpenApiGuidPage> response = ptvApi.getOrganizationApi().apiOrganizationGet(priortyScanTime, 0);
     if (response.isOk()) {

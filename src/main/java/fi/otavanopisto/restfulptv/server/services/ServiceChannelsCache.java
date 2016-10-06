@@ -1,24 +1,25 @@
 package fi.otavanopisto.restfulptv.server.services;
 
 import javax.annotation.Resource;
-import javax.enterprise.context.RequestScoped;
-
+import javax.ejb.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 import org.infinispan.Cache;
-import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.manager.CacheContainer;
 
 import fi.otavanopisto.restfulptv.server.cache.AbstractEntityCache;
 
-@RequestScoped
+@ApplicationScoped
+@Singleton
 public class ServiceChannelsCache extends AbstractEntityCache <ServiceChannelIds> {
  
   private static final long serialVersionUID = 8598552721802251272L;
   
   @Resource (lookup = "java:jboss/infinispan/container/kunta-api")
-  private transient EmbeddedCacheManager cacheManager;
+  private transient CacheContainer cacheContainer;
 
   @Override
   public Cache<String, String> getCache() {
-    return cacheManager.getCache("servicechannels");
+    return cacheContainer.getCache("servicechannels");
   }
 
 }
