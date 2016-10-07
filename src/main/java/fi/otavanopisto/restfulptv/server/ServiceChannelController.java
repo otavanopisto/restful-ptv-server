@@ -82,7 +82,7 @@ public class ServiceChannelController implements Serializable {
     
     int idCount = ids.size();
     int firstIndex = firstResult == null ? 0 : Math.min(firstResult.intValue(), idCount);
-    int toIndex = maxResults == null ? idCount - 1 : Math.min(firstIndex + maxResults.intValue(), idCount);
+    int toIndex = maxResults == null ? idCount : Math.min(firstIndex + maxResults.intValue(), idCount);
     
     List<ElectronicChannel> result = new ArrayList<>(toIndex - firstIndex);
     for (String id : ids.subList(firstIndex, toIndex)) {
@@ -138,7 +138,7 @@ public class ServiceChannelController implements Serializable {
     
     int idCount = ids.size();
     int firstIndex = firstResult == null ? 0 : Math.min(firstResult.intValue(), idCount);
-    int toIndex = maxResults == null ? idCount - 1 : Math.min(firstIndex + maxResults.intValue(), idCount);
+    int toIndex = maxResults == null ? idCount : Math.min(firstIndex + maxResults.intValue(), idCount);
     
     List<PrintableFormChannel> result = new ArrayList<>(toIndex - firstIndex);
     for (String id : ids.subList(firstIndex, toIndex)) {
@@ -166,7 +166,7 @@ public class ServiceChannelController implements Serializable {
     
     int idCount = ids.size();
     int firstIndex = firstResult == null ? 0 : Math.min(firstResult.intValue(), idCount);
-    int toIndex = maxResults == null ? idCount - 1 : Math.min(firstIndex + maxResults.intValue(), idCount);
+    int toIndex = maxResults == null ? idCount : Math.min(firstIndex + maxResults.intValue(), idCount);
     
     List<PhoneChannel> result = new ArrayList<>(toIndex - firstIndex);
     for (String id : ids.subList(firstIndex, toIndex)) {
@@ -194,7 +194,7 @@ public class ServiceChannelController implements Serializable {
     
     int idCount = ids.size();
     int firstIndex = firstResult == null ? 0 : Math.min(firstResult.intValue(), idCount);
-    int toIndex = maxResults == null ? idCount - 1 : Math.min(firstIndex + maxResults.intValue(), idCount);
+    int toIndex = maxResults == null ? idCount : Math.min(firstIndex + maxResults.intValue(), idCount);
     
     List<WebPageChannel> result = new ArrayList<>(toIndex - firstIndex);
     for (String id : ids.subList(firstIndex, toIndex)) {

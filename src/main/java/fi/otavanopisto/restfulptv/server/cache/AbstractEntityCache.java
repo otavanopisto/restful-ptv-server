@@ -5,13 +5,17 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 
 import org.infinispan.Cache;
+import org.infinispan.manager.CacheContainer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,8 +34,38 @@ public abstract class AbstractEntityCache <T> implements Serializable {
   
   @Inject
   private transient Logger logger;
+
+  @Resource (lookup = "java:jboss/infinispan/container/kunta-api")
+  private transient CacheContainer cacheContainer;
   
-  public abstract Cache<String, String> getCache();
+  public abstract String getCacheName();
+
+  public Cache<String, String> getCache() {
+    return cacheContainer.getCache(getCacheName());
+  }
+  
+  public int indexOf(String id) {
+    Cache<Object, Object> cache = cacheContainer.getCache("indexcache");
+    String cacheKey = String.format("%s-%s", getCacheName(), id);
+    if (cache.containsKey(cacheKey)) {
+      Integer index = (Integer) cache.get(cacheKey);
+      if (index != null) {
+        return index;
+      }
+    }
+    
+    return Integer.MAX_VALUE;
+  }
+  
+  public void assignIndex(String id) {
+    Cache<Object, Object> cache = cacheContainer.getCache("indexcache");
+    String cacheKey = String.format("%s-%s", getCacheName(), id);
+    
+    if (!cache.containsKey(cacheKey)) {
+      Integer index = cache.size() + 1;
+      cache.put(cacheKey, index);
+    }
+  }
   
   /**
    * Returns cached entity by id
@@ -71,6 +105,7 @@ public abstract class AbstractEntityCache <T> implements Serializable {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       cache.put(id, objectMapper.writeValueAsString(response));
+      assignIndex(id);
     } catch (JsonProcessingException e) {
       logger.log(Level.SEVERE, "Failed to serialize response into cache", e);
     }
@@ -93,7 +128,11 @@ public abstract class AbstractEntityCache <T> implements Serializable {
    */
   public List<String> getIds() {
     Cache<String, String> cache = getCache();
-    return new ArrayList<>(cache.keySet());
+    ArrayList<String> result = new ArrayList<>(cache.keySet());
+    
+    Collections.sort(result, new KeyComparator());
+    
+    return result;
   }
   
   private TypeReference<T> getTypeReference() {    
@@ -108,6 +147,24 @@ public abstract class AbstractEntityCache <T> implements Serializable {
       };
     }
     return null;
+  }
+  
+  private class KeyComparator implements Comparator<String> {
+    
+    @Override
+    public int compare(String key1, String key2) {
+      int key1Index = indexOf(key1);
+      int key2Index = indexOf(key2);
+      
+      if (key1Index > key2Index) {
+        return 1;
+      } else if (key1Index < key2Index) {
+        return -1;
+      }
+      
+      return 0;
+    }
+    
   }
   
 }

@@ -3,7 +3,7 @@ package fi.otavanopisto.restfulptv.server.servicechannels;
 import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
-import org.infinispan.Cache;
+
 import org.infinispan.manager.CacheContainer;
 
 import fi.otavanopisto.restfulptv.server.cache.AbstractEntityCache;
@@ -17,10 +17,10 @@ public class WebPageChannelCache extends AbstractEntityCache <WebPageChannel> {
   
   @Resource (lookup = "java:jboss/infinispan/container/kunta-api")
   private transient CacheContainer cacheContainer;
-
+  
   @Override
-  public Cache<String, String> getCache() {
-    return cacheContainer.getCache("webpagechannels");
+  public String getCacheName() {
+    return "webpagechannels";
   }
 
 }

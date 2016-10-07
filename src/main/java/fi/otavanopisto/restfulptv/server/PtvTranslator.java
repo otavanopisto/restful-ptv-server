@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 
+import fi.otavanopisto.ptv.client.model.IVmOpenApiLocalizedListItem;
 import fi.otavanopisto.ptv.client.model.IVmOpenApiService;
 import fi.otavanopisto.ptv.client.model.VmOpenApiAddress;
 import fi.otavanopisto.ptv.client.model.VmOpenApiAddressWithType;
@@ -17,6 +18,7 @@ import fi.otavanopisto.ptv.client.model.VmOpenApiAttachment;
 import fi.otavanopisto.ptv.client.model.VmOpenApiAttachmentWithType;
 import fi.otavanopisto.ptv.client.model.VmOpenApiElectronicChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiFintoItem;
+import fi.otavanopisto.ptv.client.model.VmOpenApiGeneralDescription;
 import fi.otavanopisto.ptv.client.model.VmOpenApiLanguageItem;
 import fi.otavanopisto.ptv.client.model.VmOpenApiLocalizedListItem;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganization;
@@ -44,6 +46,7 @@ import fi.otavanopisto.restfulptv.server.rest.model.PrintableFormChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.Service;
 import fi.otavanopisto.restfulptv.server.rest.model.ServiceHour;
 import fi.otavanopisto.restfulptv.server.rest.model.ServiceLocationChannel;
+import fi.otavanopisto.restfulptv.server.rest.model.StatutoryDescription;
 import fi.otavanopisto.restfulptv.server.rest.model.Support;
 import fi.otavanopisto.restfulptv.server.rest.model.WebPage;
 import fi.otavanopisto.restfulptv.server.rest.model.WebPageChannel;
@@ -112,6 +115,19 @@ public class PtvTranslator implements Serializable {
     
     List<LocalizedListItem> result = new ArrayList<>(ptvItems.size());
     for (VmOpenApiLocalizedListItem ptvItem : ptvItems) {
+      result.add(translateLocalizedListItem(ptvItem));
+    }
+
+    return result;
+  }
+
+  public List<LocalizedListItem> translateLocalizedListItemsI(List<IVmOpenApiLocalizedListItem> ptvItems) {
+    if (ptvItems == null || ptvItems.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
+    List<LocalizedListItem> result = new ArrayList<>(ptvItems.size());
+    for (IVmOpenApiLocalizedListItem ptvItem : ptvItems) {
       result.add(translateLocalizedListItem(ptvItem));
     }
 
@@ -237,6 +253,19 @@ public class PtvTranslator implements Serializable {
   }
 
   public LocalizedListItem translateLocalizedListItem(VmOpenApiLocalizedListItem ptvItem) {
+    if (ptvItem == null) {
+      return null;
+    }
+    
+    LocalizedListItem result = new LocalizedListItem();
+    result.setLanguage(ptvItem.getLanguage());
+    result.setType(ptvItem.getType());
+    result.setValue(ptvItem.getValue());
+    
+    return result;
+  }
+
+  public LocalizedListItem translateLocalizedListItem(IVmOpenApiLocalizedListItem ptvItem) {
     if (ptvItem == null) {
       return null;
     }
@@ -408,7 +437,7 @@ public class PtvTranslator implements Serializable {
     result.setName(ptvFintoItem.getName());
     result.setOntologyType(ptvFintoItem.getOntologyType());
     result.setParentId(ptvFintoItem.getParentId());
-    result.setParentUri(ptvFintoItem.getParentId());
+    result.setParentUri(ptvFintoItem.getParentUri());
     result.setUri(ptvFintoItem.getUri());
     
     return result;
@@ -638,6 +667,24 @@ public class PtvTranslator implements Serializable {
     result.setServiceHours(translateServiceHours(ptvWebPageChannel.getServiceHours()));
     result.setPublishingStatus(ptvWebPageChannel.getPublishingStatus());
 
+    return result;
+  }
+
+  public StatutoryDescription translateStatutoryDescription(VmOpenApiGeneralDescription ptvStatutoryDescription) {
+    if (ptvStatutoryDescription == null) {
+      return null;
+    }
+    
+    StatutoryDescription result = new StatutoryDescription();
+    result.setId(ptvStatutoryDescription.getId());
+    result.setNames(translateLocalizedListItemsI(ptvStatutoryDescription.getNames()));
+    result.setDescriptions(translateLocalizedListItemsI(ptvStatutoryDescription.getDescriptions()));
+    result.setLanguages(ptvStatutoryDescription.getLanguages());
+    result.setServiceClasses(translateFintoItems(ptvStatutoryDescription.getServiceClasses()));
+    result.setOntologyTerms(translateFintoItems(ptvStatutoryDescription.getOntologyTerms()));
+    result.setLifeEvents(translateFintoItems(ptvStatutoryDescription.getLifeEvents()));
+    result.setTargetGroups(translateFintoItems(ptvStatutoryDescription.getTargetGroups()));
+    
     return result;
   }
 
