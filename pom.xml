@@ -75,7 +75,7 @@
     <!-- Test -->
     
     <restassured.version>2.9.0</restassured.version> 
-    <wiremock.version>2.1.11</wiremock.version>
+    <wiremock.version>2.2.1</wiremock.version>
     
   </properties>
   
@@ -254,6 +254,7 @@
       <properties>
         <h2.version>1.4.192</h2.version>
         <it.port.http>58080</it.port.http>
+        <it.port.wiremock>58081</it.port.wiremock>
         <it.host>test-restful-ptv.kunta-api.fi</it.host>
         <jacoco.reportPath>${project.basedir}/target/jacoco.exec</jacoco.reportPath>
       </properties>
@@ -275,6 +276,7 @@
                 <module.path>${wildfly.home}/modules</module.path>
                 <it.host>${it.host}</it.host>
                 <it.port.http>${it.port.http}</it.port.http>
+                <it.port.wiremock>${it.port.wiremock}</it.port.wiremock>
               </systemPropertyVariables>
             </configuration>
             <executions>
@@ -387,6 +389,7 @@
                   <before-deployment>
                     <batch>true</batch>
                     <commands>
+                      <command>/system-property=ptv.url:add(value="http://${it.host}:${it.port.wiremock}")</command>
                       <command>/subsystem=undertow/server=default-server/host=restful-ptv:add(alias=["${it.host}"])</command>
                       <command>/subsystem=infinispan/cache-container=kunta-api:add()</command>
                       <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=organizations:add()</command>
