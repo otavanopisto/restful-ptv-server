@@ -437,7 +437,7 @@ public class PtvTranslator implements Serializable {
     result.setName(ptvFintoItem.getName());
     result.setOntologyType(ptvFintoItem.getOntologyType());
     result.setParentId(ptvFintoItem.getParentId());
-    result.setParentUri(ptvFintoItem.getParentId());
+    result.setParentUri(ptvFintoItem.getParentUri());
     result.setUri(ptvFintoItem.getUri());
     
     return result;

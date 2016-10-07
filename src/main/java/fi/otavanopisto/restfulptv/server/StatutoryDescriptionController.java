@@ -31,8 +31,8 @@ public class StatutoryDescriptionController implements Serializable {
     List<String> ids = statutoryDescriptionCache.getIds();
     
     int idCount = ids.size();
-    int firstIndex = firstResult == null ? 0 : Math.min(firstResult.intValue(), idCount - 1);
-    int toIndex = maxResults == null ? idCount - 1 : Math.min(firstIndex + maxResults.intValue(), idCount - 1);
+    int firstIndex = firstResult == null ? 0 : Math.min(firstResult.intValue(), idCount);
+    int toIndex = maxResults == null ? idCount  : Math.min(firstIndex + maxResults.intValue(), idCount);
     
     List<StatutoryDescription> result = new ArrayList<>(toIndex - firstIndex);
     for (String id : ids.subList(firstIndex, toIndex)) {
