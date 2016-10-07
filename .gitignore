@@ -3,3 +3,4 @@
 /.classpath
 /.project
 .cargo/
+/.tern-project

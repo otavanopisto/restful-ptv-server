@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.jayway.restassured.http.ContentType;
 
 /**
  * Abstract base class for integration tests
@@ -85,6 +87,15 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
         stringMocks.add(new StringGetMock(path, "application/json", new ObjectMapper().writeValueAsString(object)));
       } catch (JsonProcessingException e) {
         logger.log(Level.SEVERE, "Failed to serialize mock JSON object", e);
+        fail(e.getMessage());
+      }
+    }
+    
+    public void mockGetJSONFile(String path, String file) {
+      try (InputStream stream = getClass().getClassLoader().getResourceAsStream(file)) {
+        stringMocks.add(new StringGetMock(path, "application/json", IOUtils.toString(stream)));
+      } catch (IOException e) {
+        logger.log(Level.SEVERE, "Failed to mock JSON file", e);
         fail(e.getMessage());
       }
     }
@@ -175,4 +186,45 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
 
   }
   
+  public class StatutoryDescriptionMocker extends AbstractMocker {
+    
+    public StatutoryDescriptionMocker() {
+      mockGetJSONFile("/GeneralDescription", "statutorydescriptions/list.json");
+      mockStatutoryDescription("18bbc7da-3700-4ebc-b030-d4ca89aafe72");
+      mockStatutoryDescription("4ad2dd4d-7ecf-444a-bcfa-b99d79653214");
+      mockStatutoryDescription("55167777-e95d-4379-9677-6b90841c01c6");
+    }
+
+    private void mockStatutoryDescription(String guid) {
+      mockGetJSONFile(String.format("/GeneralDescription/%s", guid), String.format("statutorydescriptions/%s.json", guid));
+    }
+    
+  }
+  
+  protected void waitApiListCount(String path, String property, int count) throws InterruptedException {
+    long timeout = System.currentTimeMillis() + (60 * 1000);
+    
+    while (true) {
+      Thread.sleep(1000);
+      
+      if (countApiList(path, property) == count) {
+        return;
+      }
+      
+      if (System.currentTimeMillis() > timeout) {
+        fail(String.format("Timeout waiting for %s to have count of %s equal %d", path, property, count));
+      }
+    }
+  }
+
+  protected int countApiList(String path, String property) {
+    return given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get(path)
+      .andReturn()
+      .body()
+      .jsonPath()
+      .get("size()");
+  }
 }
