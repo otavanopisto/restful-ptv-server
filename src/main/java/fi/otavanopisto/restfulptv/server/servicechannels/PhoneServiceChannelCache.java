@@ -3,7 +3,7 @@ package fi.otavanopisto.restfulptv.server.servicechannels;
 import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
-import org.infinispan.Cache;
+
 import org.infinispan.manager.CacheContainer;
 
 import fi.otavanopisto.restfulptv.server.cache.AbstractEntityCache;
@@ -19,8 +19,8 @@ public class PhoneServiceChannelCache extends AbstractEntityCache <PhoneChannel>
   private transient CacheContainer cacheContainer;
 
   @Override
-  public Cache<String, String> getCache() {
-    return cacheContainer.getCache("phonechannels");
+  public String getCacheName() {
+    return "phonechannels";
   }
 
 }
