@@ -33,7 +33,7 @@ public abstract class AbstractEntityCache <T> implements Serializable {
   private static final long serialVersionUID = -2187920247572569941L;
   
   @Inject
-  private Logger logger;
+  private transient Logger logger;
 
   @Resource (lookup = "java:jboss/infinispan/container/kunta-api")
   private transient CacheContainer cacheContainer;
