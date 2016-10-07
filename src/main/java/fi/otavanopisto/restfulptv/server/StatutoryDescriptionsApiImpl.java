@@ -39,6 +39,14 @@ public class StatutoryDescriptionsApiImpl extends StatutoryDescriptionsApi {
 
   @Override
   public Response listStatutoryDescriptions(Long firstResult, Long maxResults) {
+    if (firstResult != null && firstResult < 0) {
+      return createBadRequest("firstResult must by a positive integer");
+    }
+    
+    if (maxResults != null && maxResults < 0) {
+      return createBadRequest("maxResults must by a positive integer");
+    }
+    
     List<StatutoryDescription> statutoryDescriptions = statutoryDescriptionController.listStatutoryDescriptions(firstResult, maxResults);
     return Response.ok(statutoryDescriptions)
       .build();

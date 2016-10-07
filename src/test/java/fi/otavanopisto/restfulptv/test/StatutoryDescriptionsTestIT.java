@@ -141,6 +141,143 @@ public class StatutoryDescriptionsTestIT extends AbstractIntegrationTest {
       
       .body("lifeEvents[0].size()", is(0));
   }
+  
+  @Test
+  public void testListStatutoryDescriptionsLimits() {
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=1")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(2));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=2")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(1));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=666")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(0));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=-1")
+      .then()
+      .assertThat()
+      .statusCode(400);
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?maxResults=2")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(2));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?maxResults=0")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(0));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?maxResults=-1")
+      .then()
+      .assertThat()
+      .statusCode(400);
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?maxResults=666")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(3));
+    
+    
+
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=0&maxResults=2")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(2));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=1&maxResults=2")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(2));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=1&maxResults=1")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(1));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=-1&maxResults=1")
+      .then()
+      .assertThat()
+      .statusCode(400);
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=2&maxResults=-1")
+      .then()
+      .assertThat()
+      .statusCode(400);
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=1&maxResults=0")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(0));
+    
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get("/statutoryDescriptions?firstResult=21&maxResults=20")
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(0));
+  }
 
   
 }
