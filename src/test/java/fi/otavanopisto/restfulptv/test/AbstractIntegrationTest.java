@@ -1,24 +1,33 @@
 package fi.otavanopisto.restfulptv.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.absent;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.jayway.restassured.http.ContentType;
 
 /**
@@ -30,6 +39,17 @@ import com.jayway.restassured.http.ContentType;
 public abstract class AbstractIntegrationTest extends AbstractTest {
 
   private static Logger logger = Logger.getLogger(AbstractTest.class.getName());
+
+  /**
+   * Starts WireMock
+   */
+  @Rule
+  public WireMockRule wireMockRule = new WireMockRule(getWireMockPort());
+  private PtvMocker ptvMocker = new PtvMocker();
+  
+  public PtvMocker getPtvMocker() {
+    return ptvMocker;
+  }
   
   /**
    * Abstract base class for all mockers
@@ -73,7 +93,34 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
      * @param content response content
      */
     public void mockGetString(String path, String type, String content) {
-      stringMocks.add(new StringGetMock(path, type, content));
+      stringMocks.add(new StringGetMock(path, type, content, null, null));
+    }
+    
+    /**
+     * Mocks string response for GET request on path
+     * 
+     * @param path path
+     * @param type response content type 
+     * @param queryParams query params for the reuqest
+     * @param content response content
+     */
+    public void mockGetString(String path, String type, String content, Map<String, String> queryParams, List<String> queryParamsAbsent) {
+      stringMocks.add(new StringGetMock(path, type, content, queryParams, queryParamsAbsent));
+    }
+    
+    /**
+     * Mocks JSON response for GET request on path
+     * 
+     * @param path path
+     * @param object JSON object
+     */
+    public void mockGetJSON(String path, Object object, Map<String, String> queryParams, List<String> queryParamsAbsent) {
+      try {
+        stringMocks.add(new StringGetMock(path, "application/json", new ObjectMapper().writeValueAsString(object), queryParams, queryParamsAbsent));
+      } catch (JsonProcessingException e) {
+        logger.log(Level.SEVERE, "Failed to serialize mock JSON object", e);
+        fail(e.getMessage());
+      }
     }
     
     /**
@@ -83,17 +130,12 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
      * @param object JSON object
      */
     public void mockGetJSON(String path, Object object) {
-      try {
-        stringMocks.add(new StringGetMock(path, "application/json", new ObjectMapper().writeValueAsString(object)));
-      } catch (JsonProcessingException e) {
-        logger.log(Level.SEVERE, "Failed to serialize mock JSON object", e);
-        fail(e.getMessage());
-      }
+      mockGetJSON(path, object, null, null);
     }
     
     public void mockGetJSONFile(String path, String file) {
       try (InputStream stream = getClass().getClassLoader().getResourceAsStream(file)) {
-        stringMocks.add(new StringGetMock(path, "application/json", IOUtils.toString(stream)));
+        stringMocks.add(new StringGetMock(path, "application/json", IOUtils.toString(stream), null, null));
       } catch (IOException e) {
         logger.log(Level.SEVERE, "Failed to mock JSON file", e);
         fail(e.getMessage());
@@ -105,7 +147,7 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
      */
     public void startMock() {
       for (StringGetMock stringMock : stringMocks) {
-        createStringMock(stringMock.getPath(), stringMock.getType(), stringMock.getContent());
+        createStringMock(stringMock.getPath(), stringMock.getType(), stringMock.getContent(), stringMock.getQueryParams(), stringMock.getQueryParamsAbsect());
       }
       
       for (BinaryGetMock binaryMock : binaryMocks) {
@@ -121,14 +163,28 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
     }
     
     private void createBinaryMock(String path, String type, byte[] binary) {
-      stubFor(get(urlEqualTo(path))
+      stubFor(get(urlPathEqualTo(path))
         .willReturn(aResponse()
         .withHeader("Content-Type", type)
         .withBody(binary)));
     }
-    
-    private void createStringMock(String path, String type, String content) {
-      stubFor(get(urlEqualTo(path))
+
+    private void createStringMock(String path, String type, String content, Map<String, String> queryParams, List<String> queryParamsAbsent) {
+      MappingBuilder mappingBuilder = get(urlPathEqualTo(path));
+      
+      if (queryParams != null) {
+        for (Entry<String, String> queryParam : queryParams.entrySet()) {
+          mappingBuilder.withQueryParam(queryParam.getKey(), equalTo(queryParam.getValue()));
+        }
+      }
+      
+      if (queryParamsAbsent != null) {
+        for (String queryParam : queryParamsAbsent) {
+          mappingBuilder.withQueryParam(queryParam, absent());
+        }
+      }
+      
+      stubFor(mappingBuilder
           .willReturn(aResponse()
           .withHeader("Content-Type", type)
           .withBody(content)));
@@ -139,11 +195,15 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
       private String path;
       private String type;
       private String content;
+      private Map<String, String> queryParams;
+      private List<String> queryParamsAbsect;
      
-      public StringGetMock(String path, String type, String content) {
+      public StringGetMock(String path, String type, String content, Map<String, String> queryParams, List<String> queryParamsAbsect) {
         this.path = path;
         this.type = type;
         this.content = content;
+        this.queryParams = queryParams;
+        this.queryParamsAbsect = queryParamsAbsect;
       }
       
       public String getPath() {
@@ -156,6 +216,14 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
       
       public String getType() {
         return type;
+      }
+      
+      public Map<String, String> getQueryParams() {
+        return queryParams;
+      }
+      
+      public List<String> getQueryParamsAbsect() {
+        return queryParamsAbsect;
       }
     }
     
@@ -185,39 +253,126 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
     }
 
   }
-  
-  public class StatutoryDescriptionMocker extends AbstractMocker {
+
+  public class PtvMocker extends AbstractMocker {
     
-    public StatutoryDescriptionMocker() {
-      mockGetJSONFile("/GeneralDescription", "statutorydescriptions/list.json");
-      mockStatutoryDescription("18bbc7da-3700-4ebc-b030-d4ca89aafe72");
-      mockStatutoryDescription("4ad2dd4d-7ecf-444a-bcfa-b99d79653214");
-      mockStatutoryDescription("55167777-e95d-4379-9677-6b90841c01c6");
+    private PtvGuidListMock generalDescriptionGuidList;
+    private PtvGuidListMock organizationGuidList;
+    private PtvGuidListMock serviceGuidList;
+    private PtvGuidListMock serviceChannelGuidList;
+    
+    
+    public PtvMocker() {
+       generalDescriptionGuidList = new PtvGuidListMock();
+       organizationGuidList = new PtvGuidListMock();
+       serviceGuidList = new PtvGuidListMock();
+       serviceChannelGuidList = new PtvGuidListMock();
+    }
+    
+    public PtvMocker mockGeneralDescriptions(String... ids) {
+      for (String id : ids) {
+        mockGetJSONFile(String.format("/api/GeneralDescription/%s", id), String.format("statutorydescriptions/%s.json", id));
+      }
+      
+      generalDescriptionGuidList.addGuids(ids);
+      
+      return this;
     }
 
-    private void mockStatutoryDescription(String guid) {
-      mockGetJSONFile(String.format("/GeneralDescription/%s", guid), String.format("statutorydescriptions/%s.json", guid));
+    public PtvMocker mockServices(String... ids) {
+      for (String id : ids) {
+        mockGetJSONFile(String.format("/api/Service/%s", id), String.format("services/%s.json", id));
+      }
+      
+      serviceGuidList.addGuids(ids);
+      
+      return this;
     }
     
+    @Override
+    public void startMock() {
+      Map<String, String> pageQuery = new HashMap<>();
+      pageQuery.put("page", "0");
+      
+      mockGetJSON("/api/GeneralDescription", generalDescriptionGuidList, pageQuery, Arrays.asList("date"));
+      mockGetJSON("/api/Organization", organizationGuidList, pageQuery, Arrays.asList("date"));
+      mockGetJSON("/api/Service", serviceGuidList, pageQuery, Arrays.asList("date"));
+      mockGetJSON("/api/ServiceChannel", serviceChannelGuidList, pageQuery, Arrays.asList("date"));
+      
+      super.startMock();
+    }
   }
   
-  protected void waitApiListCount(String path, String property, int count) throws InterruptedException {
+  public class PtvGuidListMock {
+
+    private Integer pageNumber;
+    private Integer pageSize;
+    private Integer pageCount;
+    private List<String> guidList;
+
+    public PtvGuidListMock() {
+      pageNumber = 1;
+      pageSize = 1000;
+      pageCount = 1;
+      guidList = new ArrayList<>();
+    }
+
+    public Integer getPageNumber() {
+      return pageNumber;
+    }
+
+    public void setPageNumber(Integer pageNumber) {
+      this.pageNumber = pageNumber;
+    }
+
+    public Integer getPageSize() {
+      return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+      this.pageSize = pageSize;
+    }
+
+    public Integer getPageCount() {
+      return pageCount;
+    }
+
+    public void setPageCount(Integer pageCount) {
+      this.pageCount = pageCount;
+    }
+
+    public List<String> getGuidList() {
+      return guidList;
+    }
+
+    public void setGuidList(List<String> guidList) {
+      this.guidList = guidList;
+    }
+
+    public void addGuids(String... ids) {
+      guidList.addAll(Arrays.asList(ids));
+    }
+
+  }
+  
+  protected void waitApiListCount(String path, int count) throws InterruptedException {
     long timeout = System.currentTimeMillis() + (60 * 1000);
     
     while (true) {
       Thread.sleep(1000);
       
-      if (countApiList(path, property) == count) {
+      int listCount = countApiList(path);
+      if (listCount == count) {
         return;
       }
       
       if (System.currentTimeMillis() > timeout) {
-        fail(String.format("Timeout waiting for %s to have count of %s equal %d", path, property, count));
+        fail(String.format("Timeout waiting for %s to have count %d", path, count));
       }
     }
   }
 
-  protected int countApiList(String path, String property) {
+  protected int countApiList(String path) {
     return given() 
       .baseUri(getApiBasePath())
       .contentType(ContentType.JSON)

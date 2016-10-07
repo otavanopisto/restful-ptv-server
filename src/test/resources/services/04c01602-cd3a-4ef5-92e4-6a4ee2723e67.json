@@ -1,0 +1,187 @@
+{
+  "id": "04c01602-cd3a-4ef5-92e4-6a4ee2723e67",
+  "type": "Service",
+  "statutoryServiceGeneralDescriptionId": null,
+  "serviceChargeType": null,
+  "serviceNames": [
+    {
+      "language": "fi",
+      "value": "Kirjasto- ja tietopalvelut",
+      "type": "Name"
+    },
+    {
+      "language": "fi",
+      "value": "kirjasto",
+      "type": "AlternateName"
+    }
+  ],
+  "serviceDescriptions": [
+    {
+      "language": "fi",
+      "value": "Kirjastoissa saat tietoa ja elämyksiä kirjoista, musiikista, elokuvista, lehdistä, peleistä ja tietokannoista. Voit lainata aineistoa kotiisi. Tiloissamme voit opiskella, tehdä etätyötä ja oleskella. Voit osallistua monenlaisiin tapahtumiimme ja kerhoihin.  \n\nMikkelin kaupunginkirjasto – Etelä-Savon maakuntakirjastossa on pääkirjaston lisäksi 12 lähikirjastoa. Löydät pääkirjaston torin laidalta kaupungin keskustasta. Lähikirjastomme sijaitsevat Anttolassa, Haukivuorella, Hirvensalmella, Kalevankankaalla, Kuortissa, Lähemäellä, Otavassa, Pertunmaalla, Puumalassa, Rantakylässä, Ristiinassa ja Suomenniemellä. Aukioloajat, yhteystiedot ja lisätietoa palveluista löydät verkkosivuiltamme.\nMikkelisssä kaupunkilaisia palvelevat kaupunginkirjaston lisäksi  Kaakkois-Suomen Ammattikorkeakoulu Oy:n (XAMK) kirjasto sekä yliopistokeskuksen kirjasto.",
+      "type": "Description"
+    },
+    {
+      "language": "fi",
+      "value": "Kirjasto on kaikille avoin palvelu. Aineiston lainaamiseen tarvitset kirjastokortin. Kirjastokortin saat palvelupisteistä täyttämällä asiakastietolomakkeen ja esittämällä kuvallisen henkilötodistuksen. \nAsiakastietolomakkeen voit tulostaa kirjaston verkkosivuilta. \nAlle 15-vuotias tarvitsee huoltajansa kirjallisen suostumuksen asiakastietolomakkeeseen. \n\nLumme-kirjastojen käyttöliitymällä  voit selata aineistoa ilman tunnuksia. Jos haluat varata tai uusia lainoja, kirjaudu omilla tunnuksillasi. \nKirjautumiseen tarvitaan käyttäjätunnukseksi kirjastokortin numero. Salasana on kirjastosta saatu (vähintään) nelinumeroinen tunnusluku.\n\nVoit varata vain oman alueesi kirjaston aineistoa. Toisen alueen aineistoa voi saada maksullisen kaukolainauksen kautta. Kaukolainat on tilattava oman kirjaston kautta.",
+      "type": "ServiceUserInstruction"
+    },
+    {
+      "language": "fi",
+      "value": "Kirjastoissa saat tietoa ja elämyksiä, voit lainata aineistoa kotiin. Kirjaston tilat ovat käytettävissä opiskeluun, etätyöhön ja oleskeluun. ",
+      "type": "ShortDescription"
+    }
+  ],
+  "languages": [
+    "sv",
+    "en",
+    "fi"
+  ],
+  "serviceClasses": [
+    {
+      "id": "01017f74-5fc6-4332-a84f-a0aff99c0cce",
+      "name": "Kirjastot ja tietopalvelut",
+      "code": "P25.1",
+      "ontologyType": null,
+      "uri": "http://urn.fi/URN:NBN:fi:au:ptvl:P25.1",
+      "parentId": "b34122ef-e758-44df-bb93-328fcdcbe4dc",
+      "parentUri": null
+    }
+  ],
+  "ontologyTerms": [
+    {
+      "id": "e0354d7e-0bab-40b3-ad04-e1db2bb84170",
+      "name": "kirjastopalvelut",
+      "code": "",
+      "ontologyType": "All",
+      "uri": "http://www.yso.fi/onto/koko/p15530",
+      "parentId": null,
+      "parentUri": null
+    },
+    {
+      "id": "320de7cf-e644-4a26-976a-c5cdfd3dbbc5",
+      "name": "yleiset kirjastot",
+      "code": "",
+      "ontologyType": "All",
+      "uri": "http://www.yso.fi/onto/koko/p17635",
+      "parentId": null,
+      "parentUri": null
+    },
+    {
+      "id": "9df6c93d-effc-46d6-abff-4995528aed5f",
+      "name": "maakuntakirjastot",
+      "code": "",
+      "ontologyType": "All",
+      "uri": "http://www.yso.fi/onto/koko/p4660",
+      "parentId": null,
+      "parentUri": null
+    }
+  ],
+  "targetGroups": [
+    {
+      "id": "e7196fa6-e696-4032-a611-83e152f8acfe",
+      "name": "Yritykset",
+      "code": "KR2",
+      "ontologyType": null,
+      "uri": "http://urn.fi/URN:NBN:fi:au:ptvl:KR2",
+      "parentId": null,
+      "parentUri": null
+    },
+    {
+      "id": "bf7e1aed-a2a0-484b-ba05-004db883bd71",
+      "name": "Kansalaiset",
+      "code": "KR1",
+      "ontologyType": null,
+      "uri": "http://urn.fi/URN:NBN:fi:au:ptvl:KR1",
+      "parentId": null,
+      "parentUri": null
+    }
+  ],
+  "lifeEvents": [],
+  "industrialClasses": [],
+  "keywords": [],
+  "serviceCoverageType": "Local",
+  "municipalities": [
+    "Mikkeli"
+  ],
+  "webPages": [],
+  "requirements": [
+    {
+      "value": "",
+      "language": "fi"
+    }
+  ],
+  "serviceAdditionalInformations": [
+    {
+      "language": "fi",
+      "value": "",
+      "type": "ChargeType"
+    },
+    {
+      "language": "fi",
+      "value": "",
+      "type": "DeadLine"
+    },
+    {
+      "language": "fi",
+      "value": "",
+      "type": "ProcessingTime"
+    },
+    {
+      "language": "fi",
+      "value": "",
+      "type": "Tasks"
+    },
+    {
+      "language": "fi",
+      "value": "",
+      "type": "ValidityTime"
+    }
+  ],
+  "serviceChannels": [
+    "0cb6043f-1836-48e4-8d6d-2dc6c35ca099",
+    "88113d97-38ab-4cfb-a352-27a06a928cdc",
+    "f08651b8-29ff-4883-818a-890fc7291988",
+    "f4f910b3-a7b6-4d65-bfd2-aa5011efe2fa",
+    "5887a9fc-08db-44ab-ba04-84cd70a60aa6",
+    "6c6358fc-bd74-4a44-a624-b0701851c3bf",
+    "91b7ca99-9ee6-41fb-937a-f521c692ef0d",
+    "4350e9b3-4b33-4da1-a50c-d81f873e8cd7",
+    "4365ffd3-bd55-49d0-9281-04d6d4246560",
+    "7b8e4473-d55e-4a32-ab3b-f1bae555914c",
+    "8e19b33e-c007-4c8a-9099-8aaf92ad9e29",
+    "c8dfadd9-a44d-4f20-adf8-a5adef86622c",
+    "b7dadd5b-6c77-4503-91f8-33b7fc0a669e",
+    "ac5c2e97-713d-4e28-a1a9-b9483cd3a92e",
+    "04c36b9d-db86-40d6-b76c-fb8b89733938",
+    "05a3ce2b-db4f-4348-aabf-c078463ba9f6",
+    "2d8e3bb1-0a89-4b81-ab0b-d8c500249f57",
+    "3a1f11dc-d9bb-46f1-941c-64775f21efa1",
+    "524e4cc6-690b-48fe-a726-dc1e5b2ec29c",
+    "5da23d7c-d6d8-49a3-ad31-c54d76080441",
+    "69d507bb-57b2-4fb2-9b94-6cabc9949efb",
+    "90c25bee-ef9a-4359-b35a-9acf2704ba65",
+    "95fbdc1a-1649-4ab8-99fe-c9ac8e271ca2",
+    "a1dca8b7-f0a5-43ac-9a9e-d53449170d2f",
+    "bd4ca7ca-c48a-4088-8856-ae0bac778b5e",
+    "bdecdf63-8dcf-4f27-bc32-7c9c89e6343f",
+    "3bc85ba4-c788-4ff2-ae20-e0495b5a2d08"
+  ],
+  "organizations": [
+    {
+      "organizationId": "3f7ca041-bf91-4355-95a9-8e38c2441ef4",
+      "roleType": "Producer",
+      "provisionType": null,
+      "additionalInformation": [],
+      "webPages": []
+    },
+    {
+      "organizationId": "516f3e93-3c31-4275-a3c1-6835f61be4fa",
+      "roleType": "Responsible",
+      "provisionType": null,
+      "additionalInformation": [],
+      "webPages": []
+    }
+  ],
+  "publishingStatus": "Published"
+}

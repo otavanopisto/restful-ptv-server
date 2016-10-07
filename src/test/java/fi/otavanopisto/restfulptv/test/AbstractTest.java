@@ -50,7 +50,7 @@ public abstract class AbstractTest {
   }
   
   protected int getWireMockPort() {
-    return getHttpPort() + 1;
+    return  Integer.parseInt(System.getProperty("it.port.wiremock"));
   }
   
   protected String getWireMockBasePath() {

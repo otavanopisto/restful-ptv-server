@@ -370,59 +370,61 @@ public class PtvTranslator implements Serializable {
     return result;
   }
 
-  public Service translateService(VmOpenApiService service) {
-    if (service == null) {
+  public Service translateService(VmOpenApiService ptvService) {
+    if (ptvService == null) {
       return null;
     }
     
     Service result = new Service();
-    result.setId(service.getId());
-    result.setType(service.getType());
-    result.setStatutoryDescriptionId(service.getStatutoryServiceGeneralDescriptionId());
-    result.setServiceClasses(translateFintoItems(service.getServiceClasses()));
-    result.setOntologyTerms(translateFintoItems(service.getOntologyTerms()));
-    result.setLifeEvents(translateFintoItems(service.getLifeEvents()));
-    result.setIndustrialClasses(translateFintoItems(service.getIndustrialClasses()));
-    result.setNames(translateLocalizedListItems(service.getServiceNames()));
-    result.setDescriptions(translateLocalizedListItems(service.getServiceDescriptions()));
-    result.setLanguages(service.getLanguages());
-    result.setKeywords(service.getKeywords());
-    result.setCoverageType(service.getServiceChargeType());
-    result.setMunicipalities(service.getMunicipalities());
-    result.setWebPages(translateWebPages(service.getWebPages()));
-    result.setRequirements(translateLanguageItems(service.getRequirements()));
-    result.setPublishingStatus(service.getPublishingStatus());
-    result.setChargeType(service.getServiceChargeType());
-    result.setAdditionalInformations(translateLocalizedListItems(service.getServiceAdditionalInformations()));
-    
+    result.setId(ptvService.getId());
+    result.setType(ptvService.getType());
+    result.setStatutoryDescriptionId(ptvService.getStatutoryServiceGeneralDescriptionId());
+    result.setServiceClasses(translateFintoItems(ptvService.getServiceClasses()));
+    result.setOntologyTerms(translateFintoItems(ptvService.getOntologyTerms()));
+    result.setLifeEvents(translateFintoItems(ptvService.getLifeEvents()));
+    result.setIndustrialClasses(translateFintoItems(ptvService.getIndustrialClasses()));
+    result.setNames(translateLocalizedListItems(ptvService.getServiceNames()));
+    result.setDescriptions(translateLocalizedListItems(ptvService.getServiceDescriptions()));
+    result.setLanguages(ptvService.getLanguages());
+    result.setKeywords(ptvService.getKeywords());
+    result.setCoverageType(ptvService.getServiceCoverageType());
+    result.setMunicipalities(ptvService.getMunicipalities());
+    result.setWebPages(translateWebPages(ptvService.getWebPages()));
+    result.setRequirements(translateLanguageItems(ptvService.getRequirements()));
+    result.setPublishingStatus(ptvService.getPublishingStatus());
+    result.setChargeType(ptvService.getServiceChargeType());
+    result.setAdditionalInformations(translateLocalizedListItems(ptvService.getServiceAdditionalInformations()));
+    result.setTargetGroups(translateFintoItems(ptvService.getTargetGroups()));
+
     return result;
   }
 
-  public Service translateService(IVmOpenApiService service) {
-    if (service == null) {
+  public Service translateService(IVmOpenApiService ptvService) {
+    if (ptvService == null) {
       return null;
     }
     
     Service result = new Service();
-    result.setId(service.getId());
-    result.setType(service.getType());
-    result.setStatutoryDescriptionId(service.getStatutoryServiceGeneralDescriptionId());
-    result.setServiceClasses(translateFintoItems(service.getServiceClasses()));
-    result.setOntologyTerms(translateFintoItems(service.getOntologyTerms()));
-    result.setLifeEvents(translateFintoItems(service.getLifeEvents()));
-    result.setIndustrialClasses(translateFintoItems(service.getIndustrialClasses()));
-    result.setNames(translateLocalizedListItems(service.getServiceNames()));
-    result.setDescriptions(translateLocalizedListItems(service.getServiceDescriptions()));
-    result.setLanguages(service.getLanguages());
-    result.setKeywords(service.getKeywords());
-    result.setCoverageType(service.getServiceChargeType());
-    result.setMunicipalities(service.getMunicipalities());
-    result.setWebPages(translateWebPages(service.getWebPages()));
-    result.setRequirements(translateLanguageItems(service.getRequirements()));
-    result.setPublishingStatus(service.getPublishingStatus());
-    result.setChargeType(service.getServiceChargeType());
-    result.setAdditionalInformations(translateLocalizedListItems(service.getServiceAdditionalInformations()));
-    
+    result.setId(ptvService.getId());
+    result.setType(ptvService.getType());
+    result.setStatutoryDescriptionId(ptvService.getStatutoryServiceGeneralDescriptionId());
+    result.setServiceClasses(translateFintoItems(ptvService.getServiceClasses()));
+    result.setOntologyTerms(translateFintoItems(ptvService.getOntologyTerms()));
+    result.setLifeEvents(translateFintoItems(ptvService.getLifeEvents()));
+    result.setIndustrialClasses(translateFintoItems(ptvService.getIndustrialClasses()));
+    result.setNames(translateLocalizedListItems(ptvService.getServiceNames()));
+    result.setDescriptions(translateLocalizedListItems(ptvService.getServiceDescriptions()));
+    result.setLanguages(ptvService.getLanguages());
+    result.setKeywords(ptvService.getKeywords());
+    result.setCoverageType(ptvService.getServiceCoverageType());
+    result.setMunicipalities(ptvService.getMunicipalities());
+    result.setWebPages(translateWebPages(ptvService.getWebPages()));
+    result.setRequirements(translateLanguageItems(ptvService.getRequirements()));
+    result.setPublishingStatus(ptvService.getPublishingStatus());
+    result.setChargeType(ptvService.getServiceChargeType());
+    result.setAdditionalInformations(translateLocalizedListItems(ptvService.getServiceAdditionalInformations()));
+    result.setTargetGroups(translateFintoItems(ptvService.getTargetGroups()));
+
     return result;
   }
 

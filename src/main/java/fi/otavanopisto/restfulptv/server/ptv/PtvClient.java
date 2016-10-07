@@ -115,7 +115,7 @@ public class PtvClient extends fi.otavanopisto.ptv.client.ApiClient {
   }
   
   private String getBasePath() {
-    String ptvUrl = System.getenv("ptv.url");
+    String ptvUrl = System.getProperty("ptv.url");
     if (StringUtils.isNotBlank(ptvUrl)) {
       return ptvUrl;
     }
