@@ -1,0 +1,31 @@
+name: restful-ptv-server
+version: "{{ RESTFUL_PTV_SERVER_VERSION }}"
+summary: RESTful PTV Server
+description: RESTful PTV Server
+grade: devel
+
+apps:
+  wildfly:
+    command: bin/wrapper
+    daemon: simple
+    plugs:
+      - network-bind
+parts:
+  wildfly:
+    plugin: dump
+    source: http://download.jboss.org/wildfly/10.1.0.Final/wildfly-10.1.0.Final.tar.gz
+    stage-packages:
+      - openjdk-8-jdk
+      - mysql-server-5.7
+  wildfly-modules:
+    plugin: dump
+    source: wildfly-modules      
+    organize:
+      com: modules/system/layers/base/com
+  webapp:
+    plugin: maven
+    source: https://github.com/otavanopisto/restful-ptv-server.git
+    source-type: git
+  local-files:
+    plugin: make
+    source: .

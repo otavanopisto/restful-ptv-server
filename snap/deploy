@@ -1,0 +1,15 @@
+#!/bin/bash
+
+while [[ true ]];
+do
+  management=`netstat -o -n -a | grep 9990 | grep LISTEN`
+  if [[ -n $management ]]
+  then
+    break
+  else
+    echo "Waiting for management console"
+    sleep 1
+  fi
+done
+export `jboss.cli.rc`="/var/snap/restful-ptv-server/common/jboss.cli.rc"
+$SNAP/bin/jboss-cli.sh --file=$SNAP/startup.cli
