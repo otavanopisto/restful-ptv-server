@@ -378,7 +378,7 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
   }
   
   protected void waitApiListCount(String path, int count) throws InterruptedException {
-    long timeout = System.currentTimeMillis() + (60 * 1000);
+    long timeout = System.currentTimeMillis() + (120 * 1000);
     
     while (true) {
       Thread.sleep(1000);
