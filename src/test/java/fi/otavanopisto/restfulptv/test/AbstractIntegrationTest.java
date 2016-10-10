@@ -288,6 +288,16 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
       
       return this;
     }
+
+    public PtvMocker mockOrganizations(String... ids) {
+      for (String id : ids) {
+        mockGetJSONFile(String.format("/api/Organization/%s", id), String.format("organizations/%s.json", id));
+      }
+      
+      organizationGuidList.addGuids(ids);
+      
+      return this;
+    }
     
     @Override
     public void startMock() {
