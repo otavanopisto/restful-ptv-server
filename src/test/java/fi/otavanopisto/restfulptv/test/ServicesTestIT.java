@@ -16,6 +16,7 @@ public class ServicesTestIT extends AbstractIntegrationTest {
   public void beforeTest() throws InterruptedException {
     getPtvMocker()
       .mockServices("04c01602-cd3a-4ef5-92e4-6a4ee2723e67", "1c75be4e-293b-4503-9658-8e25a380fa5a", "9f97d7d9-509a-4185-a798-4b91b6f1c25f")
+      .mockServiceChannels("01d743b8-8a1f-4e55-8e78-1061b3d96d2a","032e391b-8b15-4ba3-9239-f9523687fe35","1646ff9a-b111-48aa-b261-be333d144d95","20d1299f-d606-4ced-ad22-ba429252c43c","326ae77e-9c19-4600-995b-0c77ae88e450","61a3dd0b-0bae-4110-ba5a-f1662dc55c4d","a7b244fa-9e78-4d06-950a-e5fba3847ad6","cd459bcf-1fd3-47b5-9765-c5b29a7d2efb","d487de8b-bd31-4b04-8403-f93e39e98510","e70b23f6-2552-46d4-96b5-a42c355e1d3f","ea76ce08-6898-4741-a17e-4f197e95656f","f08651b8-29ff-4883-818a-890fc7291988","f4f910b3-a7b6-4d65-bfd2-aa5011efe2fa","f75db250-6228-4e7a-9194-855cddc561f6","fe58aa59-9d43-402f-aaed-26ec5a6dc755")
       .startMock();
 
     waitApiListCount("/services", 3);
@@ -180,137 +181,7 @@ public class ServicesTestIT extends AbstractIntegrationTest {
   
   @Test
   public void testListServicesLimits() {
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=1")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(2));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=2")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(1));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=666")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(0));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=-1")
-      .then()
-      .assertThat()
-      .statusCode(400);
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?maxResults=2")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(2));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?maxResults=0")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(0));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?maxResults=-1")
-      .then()
-      .assertThat()
-      .statusCode(400);
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?maxResults=666")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(3));
-    
-
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=0&maxResults=2")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(2));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=1&maxResults=2")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(2));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=1&maxResults=1")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(1));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=-1&maxResults=1")
-      .then()
-      .assertThat()
-      .statusCode(400);
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=2&maxResults=-1")
-      .then()
-      .assertThat()
-      .statusCode(400);
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=1&maxResults=0")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(0));
-    
-    given() 
-      .baseUri(getApiBasePath())
-      .contentType(ContentType.JSON)
-      .get("/services?firstResult=21&maxResults=20")
-      .then()
-      .assertThat()
-      .statusCode(200)
-      .body("id.size()", is(0));
+    assertListLimits("/services", 3);
   }
 
   

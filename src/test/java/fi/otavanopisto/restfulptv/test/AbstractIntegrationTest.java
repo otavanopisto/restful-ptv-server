@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ import com.jayway.restassured.http.ContentType;
  * @author Heikki Kurhinen
  * @author Antti Leppä
  */
+@SuppressWarnings ("squid:S1192")
 public abstract class AbstractIntegrationTest extends AbstractTest {
 
   private static Logger logger = Logger.getLogger(AbstractTest.class.getName());
@@ -298,6 +300,16 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
       
       return this;
     }
+
+    public PtvMocker mockServiceChannels(String... ids) {
+      for (String id : ids) {
+        mockGetJSONFile(String.format("/api/ServiceChannel/%s", id), String.format("servicechannels/%s.json", id));
+      }
+      
+      serviceChannelGuidList.addGuids(ids);
+      
+      return this;
+    }
     
     @Override
     public void startMock() {
@@ -366,7 +378,7 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
   }
   
   protected void waitApiListCount(String path, int count) throws InterruptedException {
-    long timeout = System.currentTimeMillis() + (60 * 1000);
+    long timeout = System.currentTimeMillis() + (120 * 1000);
     
     while (true) {
       Thread.sleep(1000);
@@ -391,5 +403,138 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
       .body()
       .jsonPath()
       .get("size()");
+  }
+  
+  protected void assertListLimits(String basePath, int maxResults) {
+    given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=1", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(2));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=2", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(1));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=666", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(0));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=-1", basePath))
+    .then()
+    .assertThat()
+    .statusCode(400);
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?maxResults=2", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(2));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?maxResults=0", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(0));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?maxResults=-1", basePath))
+    .then()
+    .assertThat()
+    .statusCode(400);
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?maxResults=666", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(maxResults));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=0&maxResults=2", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(2));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=1&maxResults=2", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(2));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=1&maxResults=1", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(1));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=-1&maxResults=1", basePath))
+    .then()
+    .assertThat()
+    .statusCode(400);
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=2&maxResults=-1", basePath))
+    .then()
+    .assertThat()
+    .statusCode(400);
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=1&maxResults=0", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(0));
+  
+  given() 
+    .baseUri(getApiBasePath())
+    .contentType(ContentType.JSON)
+    .get(String.format("%s?firstResult=21&maxResults=20", basePath))
+    .then()
+    .assertThat()
+    .statusCode(200)
+    .body("id.size()", is(0));
   }
 }

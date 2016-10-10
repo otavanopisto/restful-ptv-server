@@ -555,12 +555,14 @@ public class PtvTranslator implements Serializable {
     if (currentOpen) {
       serviceHour.setOpens(ptvServiceHour.getOpens());
       serviceHour.setCloses(ptvServiceHour.getCloses());
+      serviceHour.setAdditionalInformation(translateLanguageItems(ptvServiceHour.getAdditionalInformation()));
     }
    
     serviceHour.setStatus(currentOpen ? "OPEN": "CLOSED");
     serviceHour.setType(ptvServiceHour.getServiceHourType());
     serviceHour.setValidFrom(toOffsetDateTime(ptvServiceHour.getValidFrom()));
     serviceHour.setValidTo(toOffsetDateTime(ptvServiceHour.getValidTo()));
+    
     return serviceHour;
   }
 
