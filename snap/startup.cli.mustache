@@ -153,4 +153,5 @@ if (outcome != success) of /profile=full-ha/subsystem=infinispan/cache-container
   /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=indexcache/string-keyed-jdbc-store=STRING_KEYED_JDBC_STORE:add(purge=false,passivation=false,fetch-state=true,preload=true,shared=true,datasource=java:jboss/datasources/restful-ptv-cache,dialect=MYSQL,string-keyed-table={id-column={type=VARCHAR(255)}, data-column={type=LONGBLOB}})
 end-if
 
+:reload-servers(blocking=true)
 deploy /snap/restful-ptv-server/current/war/restful-ptv-server-{{ RESTFUL_PTV_SERVER_VERSION }}.war --all-server-groups
