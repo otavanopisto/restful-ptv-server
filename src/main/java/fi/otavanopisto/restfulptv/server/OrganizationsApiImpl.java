@@ -62,6 +62,14 @@ public class OrganizationsApiImpl extends OrganizationsApi {
 
   @Override
   public Response listOrganizations(Long firstResult, Long maxResults) {
+    if (firstResult != null && firstResult < 0) {
+      return createBadRequest("firstResult must by a positive integer");
+    }
+    
+    if (maxResults != null && maxResults < 0) {
+      return createBadRequest("maxResults must by a positive integer");
+    }
+    
     List<Organization> organizations = organizationController.listOrganizations(firstResult, maxResults);
     return Response.ok(organizations)
       .build();
