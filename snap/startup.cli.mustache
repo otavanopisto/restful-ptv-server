@@ -5,9 +5,13 @@ set datasourceUser=${datasourceUser}
 set datasourcePassword=${datasourcePassword}
 set datasourceURL=${datasourceURL}
 set hostname=${hostname}
+set clusterPassword=${clusterPassword}
+
+/system-property=jboss.messaging.cluster.password:add(value=$clusterPassword)
 
 echo Ensuring full-ha profile in main server group
 /server-group=main-server-group:write-attribute(name=profile,value=full-ha)
+/server-group=main-server-group:write-attribute(name=socket-binding-group, value=full-ha-sockets)
 
 echo Setting up hostname
 if (outcome != success) of /profile=full-ha/subsystem=undertow/server=default-server/host=restful-ptv:read-resource
