@@ -11,4 +11,4 @@ do
     sleep 1
   fi
 done
-env "jboss.cli.rc=/var/snap/restful-ptv-server/common/jboss.cli.rc" $SNAP/bin/jboss-cli.sh --file=$SNAP/startup.cli
+$SNAP/bin/jboss-cli.sh --file=$SNAP/startup.cli --properties=/var/snap/restful-ptv-server/common/jboss-cli.properties

@@ -1,5 +1,19 @@
 connect
 
+set datasourceJNDI=${datasourceJNDI}
+set datasourceUser=${datasourceUser}
+set datasourcePassword=${datasourcePassword}
+set datasourceURL=${datasourceURL}
+set hostname=${hostname}
+
+echo Ensuring full-ha profile in main server group
+/server-group=main-server-group:write-attribute(name=profile,value=full-ha)
+
+echo Setting up hostname
+if (outcome != success) of /profile=full-ha/subsystem=undertow/server=default-server/host=restful-ptv:read-resource
+/profile=full-ha/subsystem=undertow/server=default-server/host=restful-ptv:add(alias=["$hostname"])
+end-if
+
 echo Remove profile default
 if (outcome == success) of /profile=default:read-resource
   /profile=default:remove()
