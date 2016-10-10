@@ -207,5 +207,50 @@ public class ServiceChannelController implements Serializable {
     }
     
     return result;
+  }
+
+  public boolean isElectricServiceChannelOfService(String serviceId, String id) {
+    ServiceChannelIds channelIds = serviceChannelsCache.get(serviceId);
+    if (channelIds != null) {
+      return channelIds.getElectricChannels().contains(id);
+    }
+
+    return false;
+  }  
+
+  public boolean isPhoneServiceChannelOfService(String serviceId, String id) {
+    ServiceChannelIds channelIds = serviceChannelsCache.get(serviceId);
+    if (channelIds != null) {
+      return channelIds.getPhoneChannels().contains(id);
+    }
+
+    return false;
+  }   
+
+  public boolean isPrintableFormChannelOfService(String serviceId, String id) {
+    ServiceChannelIds channelIds = serviceChannelsCache.get(serviceId);
+    if (channelIds != null) {
+      return channelIds.getPrintableFormChannels().contains(id);
+    }
+
+    return false;
+  }  
+
+  public boolean isLocationServiceChannelsOfService(String serviceId, String id) {
+    ServiceChannelIds channelIds = serviceChannelsCache.get(serviceId);
+    if (channelIds != null) {
+      return channelIds.getLocationServiceChannels().contains(id);
+    }
+
+    return false;
+  }  
+
+  public boolean isWebPageChannelOfService(String serviceId, String id) {
+    ServiceChannelIds channelIds = serviceChannelsCache.get(serviceId);
+    if (channelIds != null) {
+      return channelIds.getWebPageChannels().contains(id);
+    }
+
+    return false;
   }  
 }
