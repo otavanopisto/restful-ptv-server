@@ -9,8 +9,11 @@ apps:
     command: bin/wrapper
     daemon: forking
     plugs:
+      - network
+      - network-control 
       - network-bind
       - network-observe
+      - network-manager
 parts:
   wildfly:
     plugin: dump
