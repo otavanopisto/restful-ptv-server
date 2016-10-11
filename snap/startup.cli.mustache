@@ -7,7 +7,9 @@ set datasourceURL=${datasourceURL}
 set hostname=${hostname}
 set clusterPassword=${clusterPassword}
 
-/system-property=jboss.messaging.cluster.password:add(value=$clusterPassword)
+if (outcome != success) of /system-property=jboss.messaging.cluster.password:read-resource
+  /system-property=jboss.messaging.cluster.password:add(value=$clusterPassword)
+end-if
 
 echo Ensuring full-ha profile in main server group
 /server-group=main-server-group:write-attribute(name=profile,value=full-ha)
