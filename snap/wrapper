@@ -22,4 +22,4 @@ cp $JBOSS_HOME/$JBOSS_MODE/configuration/logging.properties $JBOSS_CONFIG_DIR
 
 $JBOSS_HOME/bin/$JBOSS_MODE.sh --properties=$JBOSS_HOME/jboss-$JBOSS_MODE.properties &
 
-$SNAP/bin/deploy
+$SNAP/bin/deploy &
