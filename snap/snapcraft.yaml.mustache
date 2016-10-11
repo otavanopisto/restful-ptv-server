@@ -7,7 +7,7 @@ grade: devel
 apps:
   wildfly:
     command: bin/wrapper
-    daemon: simple
+    daemon: forking
     plugs:
       - network-bind
       - network-observe

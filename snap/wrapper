@@ -20,6 +20,6 @@ cp $JBOSS_HOME/$JBOSS_MODE/configuration/host-slave.xml $JBOSS_CONFIG_DIR
 cp $JBOSS_HOME/$JBOSS_MODE/configuration/host.xml $JBOSS_CONFIG_DIR
 cp $JBOSS_HOME/$JBOSS_MODE/configuration/logging.properties $JBOSS_CONFIG_DIR
 
-$SNAP/bin/deploy &
+$JBOSS_HOME/bin/$JBOSS_MODE.sh --properties=$JBOSS_HOME/jboss-$JBOSS_MODE.properties &
 
-$JBOSS_HOME/bin/$JBOSS_MODE.sh --properties=$JBOSS_HOME/jboss-$JBOSS_MODE.properties
+$SNAP/bin/deploy
