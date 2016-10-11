@@ -6,6 +6,9 @@ set datasourcePassword=${datasourcePassword}
 set datasourceURL=${datasourceURL}
 set hostname=${hostname}
 set clusterPassword=${clusterPassword}
+set clusterMaxHeap=${clusterMaxHeap}
+
+/server-group=main-server-group/jvm=default:write-attribute(name=max-heap-size,value="$clusterMaxHeap")
 
 if (outcome != success) of /system-property=jboss.messaging.cluster.password:read-resource
   /system-property=jboss.messaging.cluster.password:add(value=$clusterPassword)
