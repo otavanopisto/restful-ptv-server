@@ -8,7 +8,7 @@ do
     break
   else
     echo "Waiting for management console"
-    sleep 1
+    sleep 50
   fi
 done
 $SNAP/bin/jboss-cli.sh --file=$SNAP/startup.cli --properties=/var/snap/restful-ptv-server/common/jboss-cli.properties
