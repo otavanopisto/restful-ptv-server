@@ -10,19 +10,14 @@ apps:
     daemon: forking
     plugs:
       - network
-      - network-control 
       - network-bind
       - network-observe
-      - network-manager
-      - mount-observe
       - firewall-control
       - hardware-observe
       - log-observe
-      - ppp
       - process-control
       - snapd-control
       - system-observe
-      - system-trace
 parts:
   wildfly:
     plugin: dump
