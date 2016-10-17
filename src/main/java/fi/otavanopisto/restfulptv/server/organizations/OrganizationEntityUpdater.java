@@ -1,11 +1,14 @@
 package fi.otavanopisto.restfulptv.server.organizations;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
@@ -25,6 +28,7 @@ import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
 @ApplicationScoped
 @Singleton
 @SuppressWarnings("squid:S3306")
+@Lock(LockType.READ)
 public class OrganizationEntityUpdater extends EntityUpdater {
 
   private static final int TIMER_INTERVAL = 5000;
@@ -45,11 +49,13 @@ public class OrganizationEntityUpdater extends EntityUpdater {
   private TimerService timerService;
 
   private boolean stopped;
+  private boolean running;
   private List<String> queue;
 
   @PostConstruct
   public void init() {
-    queue = new ArrayList<>();
+    queue = Collections.synchronizedList(new ArrayList<>());
+    running = false;
   }
 
   @Override
@@ -90,22 +96,30 @@ public class OrganizationEntityUpdater extends EntityUpdater {
   @Timeout
   public void timeout(Timer timer) {
     if (!stopped) {
-      if (!queue.isEmpty()) {
-        String entityId = queue.iterator().next();
-        if (!queue.remove(entityId)) {
-          logger.warning(String.format("Could not remove %s from queue", entityId));
-        }
-
-        ApiResponse<VmOpenApiOrganization> response = ptvApi.getOrganizationApi().apiOrganizationByIdGet(entityId);
-        if (response.isOk()) {
-          cacheResponse(entityId, response.getResponse());
-        } else {
-          logger.warning(String.format("Service %s caching failed on [%d] %s", entityId, response.getStatus(),
-              response.getMessage()));
-        }
+      if (running) {
+        return;
       }
+      
+      try {
+        running = true;
+        if (!queue.isEmpty()) {
+          String entityId = queue.iterator().next();
+          if (!queue.remove(entityId)) {
+            logger.warning(String.format("Could not remove %s from queue", entityId));
+          }
 
-      startTimer(TIMER_INTERVAL);
+          ApiResponse<VmOpenApiOrganization> response = ptvApi.getOrganizationApi().apiOrganizationByIdGet(entityId);
+          if (response.isOk()) {
+            cacheResponse(entityId, response.getResponse());
+          } else {
+            logger.warning(String.format("Service %s caching failed on [%d] %s", entityId, response.getStatus(),
+                response.getMessage()));
+          }
+        }
+      } finally {
+        running = false;
+        startTimer(TIMER_INTERVAL);
+      }
     }
   }
 
