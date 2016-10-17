@@ -22,7 +22,7 @@ echo Ensuring full-ha profile in main server group
 
 echo Setting up hostname
 if (outcome != success) of /profile=full-ha/subsystem=undertow/server=default-server/host=restful-ptv:read-resource
-/profile=full-ha/subsystem=undertow/server=default-server/host=restful-ptv:add(alias=[$hostname])
+  /profile=full-ha/subsystem=undertow/server=default-server/host=restful-ptv:add(alias=$hostname)
 end-if
 
 echo Remove profile default
