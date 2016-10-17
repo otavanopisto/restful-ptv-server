@@ -1,5 +1,30 @@
 connect
 
+:start-servers(blocking=true)
+
+set datasourceJNDI=${datasourceJNDI}
+set datasourceUser=${datasourceUser}
+set datasourcePassword=${datasourcePassword}
+set datasourceURL=${datasourceURL}
+set hostname=${hostname}
+set clusterPassword=${clusterPassword}
+set clusterMaxHeap=${clusterMaxHeap}
+
+/server-group=main-server-group/jvm=default:write-attribute(name=max-heap-size,value=$clusterMaxHeap)
+
+if (outcome != success) of /system-property=jboss.messaging.cluster.password:read-resource
+  /system-property=jboss.messaging.cluster.password:add(value=$clusterPassword)
+end-if
+
+echo Ensuring full-ha profile in main server group
+/server-group=main-server-group:write-attribute(name=profile,value=full-ha)
+/server-group=main-server-group:write-attribute(name=socket-binding-group, value=full-ha-sockets)
+
+echo Setting up hostname
+if (outcome != success) of /profile=full-ha/subsystem=undertow/server=default-server/host=restful-ptv:read-resource
+  /profile=full-ha/subsystem=undertow/server=default-server/host=restful-ptv:add(alias=$hostname)
+end-if
+
 echo Remove profile default
 if (outcome == success) of /profile=default:read-resource
   /profile=default:remove()
@@ -135,4 +160,5 @@ if (outcome != success) of /profile=full-ha/subsystem=infinispan/cache-container
   /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=indexcache/string-keyed-jdbc-store=STRING_KEYED_JDBC_STORE:add(purge=false,passivation=false,fetch-state=true,preload=true,shared=true,datasource=java:jboss/datasources/restful-ptv-cache,dialect=MYSQL,string-keyed-table={id-column={type=VARCHAR(255)}, data-column={type=LONGBLOB}})
 end-if
 
-deploy /var/snap/restful-ptv-server/current/war/restful-ptv-server-{{ RESTFUL_PTV_SERVER_VERSION }}.war --all-server-groups
+:reload-servers(blocking=true)
+deploy /snap/restful-ptv-server/current/war/restful-ptv-server-{{ RESTFUL_PTV_SERVER_VERSION }}.war --all-server-groups
