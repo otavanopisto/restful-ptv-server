@@ -1,6 +1,7 @@
 package fi.otavanopisto.restfulptv.server.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,7 +63,7 @@ public class ServiceEntityUpdater extends EntityUpdater {
 
   @PostConstruct
   public void init() {
-    queue = new ArrayList<>();
+    queue = Collections.synchronizedList(new ArrayList<>());
   }
 
   @Override
@@ -107,7 +108,7 @@ public class ServiceEntityUpdater extends EntityUpdater {
       if (running) {
         return;
       }
-      
+
       try {
         running = true;
         if (!queue.isEmpty()) {
@@ -128,7 +129,7 @@ public class ServiceEntityUpdater extends EntityUpdater {
         running = false;
         startTimer(TIMER_INTERVAL);
       }
-  
+
     }
   }
 

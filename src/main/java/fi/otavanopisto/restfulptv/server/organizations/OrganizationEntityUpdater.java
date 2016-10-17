@@ -55,7 +55,6 @@ public class OrganizationEntityUpdater extends EntityUpdater {
   @PostConstruct
   public void init() {
     queue = Collections.synchronizedList(new ArrayList<>());
-    running = false;
   }
 
   @Override
@@ -65,6 +64,7 @@ public class OrganizationEntityUpdater extends EntityUpdater {
 
   @Override
   public void startTimer() {
+    running = false;
     startTimer(TIMER_INTERVAL);
   }
 

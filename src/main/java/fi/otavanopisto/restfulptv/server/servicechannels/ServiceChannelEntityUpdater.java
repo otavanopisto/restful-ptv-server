@@ -2,6 +2,7 @@ package fi.otavanopisto.restfulptv.server.servicechannels;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -77,8 +78,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
 
   @PostConstruct
   public void init() {
-    queue = new ArrayList<>();
-    running = false;
+    queue = Collections.synchronizedList(new ArrayList<>());
   }
 
   @Override
@@ -88,6 +88,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
 
   @Override
   public void startTimer() {
+    running = false;
     startTimer(TIMER_INTERVAL);
   }
 
