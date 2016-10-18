@@ -24,6 +24,7 @@ import fi.otavanopisto.ptv.client.model.VmOpenApiLocalizedListItem;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganization;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganizationEmail;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganizationPhone;
+import fi.otavanopisto.ptv.client.model.VmOpenApiOrganizationService;
 import fi.otavanopisto.ptv.client.model.VmOpenApiPhoneChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiPrintableFormChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiService;
@@ -41,6 +42,7 @@ import fi.otavanopisto.restfulptv.server.rest.model.LocalizedListItem;
 import fi.otavanopisto.restfulptv.server.rest.model.Organization;
 import fi.otavanopisto.restfulptv.server.rest.model.OrganizationEmail;
 import fi.otavanopisto.restfulptv.server.rest.model.OrganizationPhone;
+import fi.otavanopisto.restfulptv.server.rest.model.OrganizationService;
 import fi.otavanopisto.restfulptv.server.rest.model.PhoneChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.PrintableFormChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.Service;
@@ -469,7 +471,29 @@ public class PtvTranslator implements Serializable {
 
     return result;
   }
-  
+
+  public OrganizationService translateOrganizationService(VmOpenApiOrganizationService ptvOrganizationService) {
+    if (ptvOrganizationService == null) {
+      return null;
+    }
+    
+    String organizationId = ptvOrganizationService.getOrganizationId();
+    String serviceId = ptvOrganizationService.getServiceId();
+    String id = String.format("%s+%s", organizationId, serviceId);
+    
+    OrganizationService result = new OrganizationService();
+    
+    result.setAdditionalInformation(translateLanguageItems(ptvOrganizationService.getAdditionalInformation()));
+    result.setId(id);
+    result.setOrganizationId(organizationId);
+    result.setOrganizationId(organizationId);
+    result.setProvisionType(ptvOrganizationService.getProvisionType());
+    result.setRoleType(ptvOrganizationService.getRoleType());
+    result.setServiceId(serviceId);
+    result.setWebPages(translateWebPages(ptvOrganizationService.getWebPages()));
+    
+    return result;
+  }
   
   private Support translateSupport(VmOpenApiSupport ptvSupport) {
     if (ptvSupport == null) {
@@ -699,5 +723,5 @@ public class PtvTranslator implements Serializable {
     
     return localeDateTime.atOffset(ZoneOffset.UTC);
   }
-  
+
 }

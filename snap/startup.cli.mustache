@@ -150,6 +150,16 @@ if (outcome != success) of /profile=full-ha/subsystem=infinispan/cache-container
   /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=statutorydescriptions/string-keyed-jdbc-store=STRING_KEYED_JDBC_STORE:add(purge=false,passivation=false,fetch-state=true,preload=true,shared=true,datasource=java:jboss/datasources/restful-ptv-cache,dialect=MYSQL,string-keyed-table={id-column={type=VARCHAR(255)}, data-column={type=LONGBLOB}})
 end-if
 
+echo Setting up organizationservices cache
+if (outcome != success) of /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=organizationservices:read-resource
+  /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=organizationservices:add(mode=SYNC)
+  /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=organizationservices/component=state-transfer:add(enabled=true)
+  /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=organizationservices/component=transaction:add(mode=NONE)
+  /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=organizationservices/component=eviction:add(max-entries=-1,strategy=NONE)
+  /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=organizationservices/component=expiration:add(interval=-1,lifespan=-1,max-idle=-1)
+  /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=organizationservices/string-keyed-jdbc-store=STRING_KEYED_JDBC_STORE:add(purge=false,passivation=false,fetch-state=true,preload=true,shared=true,datasource=java:jboss/datasources/restful-ptv-cache,dialect=MYSQL,string-keyed-table={id-column={type=VARCHAR(255)}, data-column={type=LONGBLOB}})
+end-if
+
 echo Setting up indexcache cache
 if (outcome != success) of /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=indexcache:read-resource
   /profile=full-ha/subsystem=infinispan/cache-container=kunta-api/replicated-cache=indexcache:add(mode=SYNC)

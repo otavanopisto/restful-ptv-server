@@ -67,6 +67,10 @@ public abstract class AbstractEntityCache <T> implements Serializable {
     }
   }
   
+  public boolean has(String id) {
+    return getCache().containsKey(id);
+  }
+  
   /**
    * Returns cached entity by id
    * 

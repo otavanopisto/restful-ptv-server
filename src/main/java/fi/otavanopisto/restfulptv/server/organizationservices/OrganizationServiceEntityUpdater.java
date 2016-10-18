@@ -1,4 +1,4 @@
-package fi.otavanopisto.restfulptv.server.organizations;
+package fi.otavanopisto.restfulptv.server.organizationservices;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,25 +15,24 @@ import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
 
 import fi.otavanopisto.ptv.client.ApiResponse;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganization;
 import fi.otavanopisto.ptv.client.model.VmOpenApiOrganizationService;
 import fi.otavanopisto.restfulptv.server.PtvTranslator;
-import fi.otavanopisto.restfulptv.server.organizationservices.OrganizationServiceCache;
-import fi.otavanopisto.restfulptv.server.organizationservices.OrganizationServiceIdUpdateRequest;
 import fi.otavanopisto.restfulptv.server.ptv.PtvApi;
-import fi.otavanopisto.restfulptv.server.rest.model.Organization;
+import fi.otavanopisto.restfulptv.server.rest.model.OrganizationService;
 import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
 
 @ApplicationScoped
 @Singleton
 @AccessTimeout (unit = TimeUnit.HOURS, value = 1l)
 @SuppressWarnings("squid:S3306")
-public class OrganizationEntityUpdater extends EntityUpdater {
+public class OrganizationServiceEntityUpdater extends EntityUpdater {
 
   private static final int TIMER_INTERVAL = 5000;
 
@@ -45,18 +44,12 @@ public class OrganizationEntityUpdater extends EntityUpdater {
 
   @Inject
   private OrganizationServiceCache organizationServiceCache;
-  
-  @Inject
-  private OrganizationCache organizationCache;
 
   @Inject
   private PtvTranslator ptvTranslator;
 
   @Resource
   private TimerService timerService;
-  
-  @Inject
-  private Event<OrganizationServiceIdUpdateRequest> organizationServiceIdUpdateRequest;
 
   private boolean stopped;
   private List<String> queue;
@@ -68,7 +61,7 @@ public class OrganizationEntityUpdater extends EntityUpdater {
 
   @Override
   public String getName() {
-    return "organizations";
+    return "organizationservices";
   }
 
   @Override
@@ -88,7 +81,7 @@ public class OrganizationEntityUpdater extends EntityUpdater {
     stopped = true;
   }
 
-  public void onOrganizationIdUpdateRequest(@Observes OrganizationIdUpdateRequest event) {
+  public void onOrganizationIdUpdateRequest(@Observes OrganizationServiceIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {
         queue.remove(event.getId());
@@ -118,35 +111,38 @@ public class OrganizationEntityUpdater extends EntityUpdater {
     if (!queue.remove(entityId)) {
       logger.warning(String.format("Could not remove %s from queue", entityId));
     }
-
-    ApiResponse<VmOpenApiOrganization> response = ptvApi.getOrganizationApi().apiOrganizationByIdGet(entityId);
+    
+    String[] idParts = StringUtils.split(entityId, '+');
+    if ((idParts == null) || (idParts.length != 2)) {
+      logger.severe(String.format("Malformed organization service id %s", entityId));
+      return;
+    }
+    
+    String organizationId = idParts[0];
+    String serviceId = idParts[1];
+    
+    ApiResponse<VmOpenApiOrganization> response = ptvApi.getOrganizationApi().apiOrganizationByIdGet(organizationId);
     if (response.isOk()) {
-      VmOpenApiOrganization organization = response.getResponse();
-      cacheResponse(entityId, organization);
-      List<VmOpenApiOrganizationService> services = organization.getServices();
-      
-      if (services != null && !services.isEmpty())  {
-        for (VmOpenApiOrganizationService service : services) {
-          String organizationId = service.getOrganizationId();
-          String serviceId = service.getServiceId();
-          String id = String.format("%s+%s", organizationId, serviceId);
-          boolean priority = !organizationServiceCache.has(id);
-          organizationServiceIdUpdateRequest.fire(new OrganizationServiceIdUpdateRequest(id, priority));
+      for (VmOpenApiOrganizationService organizationService : response.getResponse().getServices()) {
+        if (StringUtils.equals(organizationService.getServiceId(), serviceId)) {
+          cacheResponse(entityId, organizationService);
+          return;
         }
       }
       
+      logger.warning(String.format("Could not find service %s from organization %s", serviceId, organizationId));
     } else {
-      logger.warning(String.format("Service %s caching failed on [%d] %s", entityId, response.getStatus(),
+      logger.warning(String.format("Organization service %s caching failed on [%d] %s", entityId, response.getStatus(),
           response.getMessage()));
     }
   }
 
-  private void cacheResponse(String entityId, VmOpenApiOrganization ptvOrganization) {
-    Organization organization = ptvTranslator.translateOrganization(ptvOrganization);
-    if (organization != null) {
-      organizationCache.put(entityId, organization);
+  private void cacheResponse(String entityId, VmOpenApiOrganizationService ptvOrganizationService) {
+    OrganizationService organizationService = ptvTranslator.translateOrganizationService(ptvOrganizationService);
+    if (organizationService != null) {
+      organizationServiceCache.put(entityId, organizationService);
     } else {
-      logger.warning(String.format("Failed to translate ptvOrganization %s", ptvOrganization.getId()));
+      logger.warning(String.format("Failed to translate ptvOrganizationService %s", entityId));
     }
   }
 
