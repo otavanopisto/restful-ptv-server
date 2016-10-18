@@ -16,6 +16,7 @@ import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 
 import fi.otavanopisto.ptv.client.ApiResponse;
@@ -80,7 +81,7 @@ public class StatutoryDescriptionEntityUpdater extends EntityUpdater {
     stopped = true;
   }
 
-  public void onStatutoryDescriptionIdUpdateRequest(@Observes StatutoryDescriptionIdUpdateRequest event) {
+  public void onStatutoryDescriptionIdUpdateRequest(@Observes (during = TransactionPhase.AFTER_COMPLETION) StatutoryDescriptionIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {
         queue.remove(event.getId());
