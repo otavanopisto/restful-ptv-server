@@ -27,6 +27,7 @@ import fi.otavanopisto.restfulptv.server.rest.model.Service;
 import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
 import fi.otavanopisto.restfulptv.server.servicechannels.ServiceChannelResolver;
 import fi.otavanopisto.restfulptv.server.servicechannels.ServiceChannelType;
+import fi.otavanopisto.restfulptv.server.system.SystemUtils;
 
 @ApplicationScoped
 @Singleton
@@ -108,7 +109,7 @@ public class ServiceEntityUpdater extends EntityUpdater {
           processEntity(queue.iterator().next());
         }
       } finally {
-        startTimer(TIMER_INTERVAL);
+        startTimer(SystemUtils.inTestMode() ? 1000 : TIMER_INTERVAL);
       }
 
     }

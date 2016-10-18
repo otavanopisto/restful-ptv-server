@@ -36,6 +36,7 @@ import fi.otavanopisto.restfulptv.server.rest.model.PrintableFormChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.ServiceLocationChannel;
 import fi.otavanopisto.restfulptv.server.rest.model.WebPageChannel;
 import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
+import fi.otavanopisto.restfulptv.server.system.SystemUtils;
 
 @ApplicationScoped
 @Singleton
@@ -123,7 +124,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
           processEntity(queue.iterator().next());
         }
       } finally {
-        startTimer(TIMER_INTERVAL);
+        startTimer(SystemUtils.inTestMode() ? 1000 : TIMER_INTERVAL);
       }
 
     }

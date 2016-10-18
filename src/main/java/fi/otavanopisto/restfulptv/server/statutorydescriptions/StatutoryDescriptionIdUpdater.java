@@ -19,6 +19,7 @@ import fi.otavanopisto.ptv.client.ApiResponse;
 import fi.otavanopisto.ptv.client.model.VmOpenApiGuidPage;
 import fi.otavanopisto.restfulptv.server.ptv.PtvApi;
 import fi.otavanopisto.restfulptv.server.schedulers.IdUpdater;
+import fi.otavanopisto.restfulptv.server.system.SystemUtils;
 
 @ApplicationScoped
 @Singleton
@@ -83,7 +84,7 @@ public class StatutoryDescriptionIdUpdater implements IdUpdater {
         discoverPriorityIds();
         counter++;
       } finally {
-        startTimer(TIMER_INTERVAL);
+        startTimer(SystemUtils.inTestMode() ? 1000 : TIMER_INTERVAL);
       }
 
     }

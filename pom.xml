@@ -389,6 +389,7 @@
                   <before-deployment>
                     <batch>true</batch>
                     <commands>
+                      <command>/system-property=it-test:add(value="true")</command>
                       <command>/system-property=ptv.url:add(value="http://${it.host}:${it.port.wiremock}")</command>
                       <command>/subsystem=undertow/server=default-server/host=restful-ptv:add(alias=["${it.host}"])</command>
                       <command>/subsystem=infinispan/cache-container=kunta-api:add()</command>

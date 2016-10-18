@@ -24,6 +24,7 @@ import fi.otavanopisto.restfulptv.server.PtvTranslator;
 import fi.otavanopisto.restfulptv.server.ptv.PtvApi;
 import fi.otavanopisto.restfulptv.server.rest.model.StatutoryDescription;
 import fi.otavanopisto.restfulptv.server.schedulers.EntityUpdater;
+import fi.otavanopisto.restfulptv.server.system.SystemUtils;
 
 @ApplicationScoped
 @Singleton
@@ -99,7 +100,7 @@ public class StatutoryDescriptionEntityUpdater extends EntityUpdater {
           processEntity(queue.iterator().next());
         }
       } finally {
-        startTimer(TIMER_INTERVAL);
+        startTimer(SystemUtils.inTestMode() ? 1000 : TIMER_INTERVAL);
       }
 
     }
