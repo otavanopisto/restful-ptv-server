@@ -128,23 +128,26 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
       try {
         running = true;
         if (!queue.isEmpty()) {
-          String entityId = queue.iterator().next();
-          if (!queue.remove(entityId)) {
-            logger.warning(String.format("Could not remove %s from queue", entityId));
-          }
-
-          Map<String, Object> serviceChannelData = serviceChannelResolver.loadServiceChannelData(entityId);
-          if (serviceChannelData != null) {
-            handleResponse(entityId, serviceChannelData);
-          } else {
-            logger.warning(String.format("Service channel %s caching failed", entityId));
-          }
+          processEntity(queue.iterator().next());
         }
       } finally {
         running = false;
         startTimer(TIMER_INTERVAL);
       }
 
+    }
+  }
+
+  private void processEntity(String entityId) {
+    if (!queue.remove(entityId)) {
+      logger.warning(String.format("Could not remove %s from queue", entityId));
+    }
+
+    Map<String, Object> serviceChannelData = serviceChannelResolver.loadServiceChannelData(entityId);
+    if (serviceChannelData != null) {
+      handleResponse(entityId, serviceChannelData);
+    } else {
+      logger.warning(String.format("Service channel %s caching failed", entityId));
     }
   }
 

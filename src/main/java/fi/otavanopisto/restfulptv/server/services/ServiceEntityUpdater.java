@@ -113,24 +113,26 @@ public class ServiceEntityUpdater extends EntityUpdater {
       try {
         running = true;
         if (!queue.isEmpty()) {
-          String entityId = queue.iterator().next();
-          if (!queue.remove(entityId)) {
-            logger.warning(String.format("Could not remove %s from queue", entityId));
-          }
-
-          ApiResponse<IVmOpenApiService> response = ptvApi.getServiceApi().apiServiceByIdGet(entityId);
-          if (response.isOk()) {
-            cacheResponse(entityId, response.getResponse());
-          } else {
-            logger.warning(String.format("Service %s caching failed on [%d] %s", entityId, response.getStatus(),
-                response.getMessage()));
-          }
+          processEntity(queue.iterator().next());
         }
       } finally {
         running = false;
         startTimer(TIMER_INTERVAL);
       }
 
+    }
+  }
+
+  private void processEntity(String entityId) {
+    if (!queue.remove(entityId)) {
+      logger.warning(String.format("Could not remove %s from queue", entityId));
+    }
+
+    ApiResponse<IVmOpenApiService> response = ptvApi.getServiceApi().apiServiceByIdGet(entityId);
+    if (response.isOk()) {
+      cacheResponse(entityId, response.getResponse());
+    } else {
+      logger.warning(String.format("Service %s caching failed on [%d] %s", entityId, response.getStatus(), response.getMessage()));
     }
   }
 
