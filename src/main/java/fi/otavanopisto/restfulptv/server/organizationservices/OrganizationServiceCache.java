@@ -1,5 +1,7 @@
 package fi.otavanopisto.restfulptv.server.organizationservices;
 
+import java.util.List;
+
 import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
 
@@ -15,6 +17,10 @@ public class OrganizationServiceCache extends AbstractEntityCache <OrganizationS
   @Override
   public String getCacheName() {
     return "organizationservices";
+  }
+  
+  public List<String> getOrganizationIds(String organizationId) {
+    return getIdsStartsWith(String.format("%s+", organizationId));
   }
 
 }
