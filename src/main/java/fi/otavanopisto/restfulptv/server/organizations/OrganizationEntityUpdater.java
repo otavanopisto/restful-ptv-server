@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
@@ -16,7 +17,6 @@ import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 
 import fi.otavanopisto.ptv.client.ApiResponse;
@@ -81,7 +81,9 @@ public class OrganizationEntityUpdater extends EntityUpdater {
     stopped = true;
   }
 
-  public void onOrganizationIdUpdateRequest(@Observes (during = TransactionPhase.AFTER_COMPLETION) OrganizationIdUpdateRequest event) {
+  @Asynchronous
+  @Lock(LockType.READ)
+  public void onOrganizationIdUpdateRequest(@Observes OrganizationIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {
         queue.remove(event.getId());
