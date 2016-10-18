@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fi.otavanopisto.fi</groupId>
   <artifactId>restful-ptv-server</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
+  <version>1.2.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>RESTful PTV Server</description>
@@ -70,7 +70,7 @@
     
     <!-- RESTful PTV -->
     
-    <restful-ptv-spec.version>1.2.6</restful-ptv-spec.version>
+    <restful-ptv-spec.version>1.2.7</restful-ptv-spec.version>
     
     <!-- Test -->
     
@@ -389,6 +389,7 @@
                   <before-deployment>
                     <batch>true</batch>
                     <commands>
+                      <command>/system-property=it-test:add(value="true")</command>
                       <command>/system-property=ptv.url:add(value="http://${it.host}:${it.port.wiremock}")</command>
                       <command>/subsystem=undertow/server=default-server/host=restful-ptv:add(alias=["${it.host}"])</command>
                       <command>/subsystem=infinispan/cache-container=kunta-api:add()</command>

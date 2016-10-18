@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 
@@ -65,6 +66,10 @@ public abstract class AbstractEntityCache <T> implements Serializable {
       Integer index = cache.size() + 1;
       cache.put(cacheKey, index);
     }
+  }
+  
+  public boolean has(String id) {
+    return getCache().containsKey(id);
   }
   
   /**
@@ -129,6 +134,21 @@ public abstract class AbstractEntityCache <T> implements Serializable {
   public List<String> getIds() {
     Cache<String, String> cache = getCache();
     ArrayList<String> result = new ArrayList<>(cache.keySet());
+    
+    Collections.sort(result, new KeyComparator());
+    
+    return result;
+  }
+  
+  public List<String> getIdsStartsWith(String prefix) {
+    Cache<String, String> cache = getCache();
+    List<String> result = new ArrayList<>();
+    
+    for (String key : cache.keySet()) {
+      if (StringUtils.startsWith(key, prefix)) {
+        result.add(key);
+      }
+    }
     
     Collections.sort(result, new KeyComparator());
     

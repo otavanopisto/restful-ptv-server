@@ -52,6 +52,26 @@ public abstract class AbstractIntegrationTest extends AbstractTest {
   public PtvMocker getPtvMocker() {
     return ptvMocker;
   }
+
+  protected void assertFound(String url) {
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get(url)
+      .then()
+      .assertThat()
+      .statusCode(200);
+  }
+
+  protected void assertNotFound(String url) {
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get(url)
+      .then()
+      .assertThat()
+      .statusCode(404);
+  }
   
   /**
    * Abstract base class for all mockers
