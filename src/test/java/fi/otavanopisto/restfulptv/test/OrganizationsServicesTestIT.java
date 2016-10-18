@@ -66,9 +66,24 @@ public class OrganizationsServicesTestIT extends AbstractIntegrationTest {
   }
   
   @Test
-  public void testListOrganizationsLimits() {
+  public void testListOrganizationsServicesLimits() {
     assertListLimits(String.format("/organizations/%s/organizationServices", "5f648c3f-20e2-4d84-83ee-2e2e307a90f2"), 3);
   }
 
+  @Test
+  public void testOrganizationsServicesNotFound() throws InterruptedException {
+    String organizationId = "5f648c3f-20e2-4d84-83ee-2e2e307a90f2";
+    String incorrectOrganizationId = "cdc0c5ea-a57a-41ae-ad0f-c8f920c7cd19";
+    String organizationServiceId = "5f648c3f-20e2-4d84-83ee-2e2e307a90f2+79bb9979-e351-4ec9-af1e-8deb8362096e";
+    String[] malformedIds = new String[] {"evil", "*", "/", "1", "-1", "~"};
+    
+    assertFound(String.format("/organizations/%s/organizationServices/%s", organizationId, organizationServiceId));
+    
+    for (String malformedId : malformedIds) {
+      assertNotFound(String.format("/organizations/%s/organizationServices/%s", organizationId, malformedId));
+    }
+    
+    assertNotFound(String.format("/organizations/%s/organizationServices/%s", incorrectOrganizationId, organizationServiceId));
+  }
   
 }
