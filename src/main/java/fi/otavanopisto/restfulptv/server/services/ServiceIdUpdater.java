@@ -1,11 +1,11 @@
 package fi.otavanopisto.restfulptv.server.services;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
-import javax.ejb.Lock;
-import javax.ejb.LockType;
+import javax.ejb.AccessTimeout;
 import javax.ejb.Singleton;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
@@ -22,12 +22,12 @@ import fi.otavanopisto.restfulptv.server.schedulers.IdUpdater;
 
 @ApplicationScoped
 @Singleton
+@AccessTimeout (unit = TimeUnit.HOURS, value = 1l)
 @SuppressWarnings("squid:S3306")
-@Lock(LockType.READ)
 public class ServiceIdUpdater implements IdUpdater {
 
   private static final int WARMUP_TIME = 1000 * 10;
-  private static final int TIMER_INTERVAL = 5000;
+  private static final int TIMER_INTERVAL = 30000;
   private static final int STANDARD_INTERVAL = 10;
 
   @Inject
@@ -43,7 +43,6 @@ public class ServiceIdUpdater implements IdUpdater {
   private TimerService timerService;
 
   private boolean stopped;
-  private boolean running;
   private int page;
   private int pageCount;
   private int counter;
@@ -56,7 +55,6 @@ public class ServiceIdUpdater implements IdUpdater {
 
   @Override
   public void startTimer() {
-    running = false;
     priortyScanTime = LocalDateTime.now();
     stopped = false;
     counter = 0;
@@ -77,21 +75,15 @@ public class ServiceIdUpdater implements IdUpdater {
   @Timeout
   public void timeout(Timer timer) {
     if (!stopped) {
-      if (running) {
-        return;
-      }
-
       try {
-        running = true;
         if (counter % STANDARD_INTERVAL == 0) {
           discoverIds();
         }
 
         discoverPriorityIds();
-        startTimer(TIMER_INTERVAL);
         counter++;
       } finally {
-        running = false;
+        startTimer(TIMER_INTERVAL);
       }
 
     }

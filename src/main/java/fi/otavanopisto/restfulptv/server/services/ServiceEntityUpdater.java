@@ -3,14 +3,13 @@ package fi.otavanopisto.restfulptv.server.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.Asynchronous;
-import javax.ejb.Lock;
-import javax.ejb.LockType;
+import javax.ejb.AccessTimeout;
 import javax.ejb.Singleton;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
@@ -31,8 +30,8 @@ import fi.otavanopisto.restfulptv.server.servicechannels.ServiceChannelType;
 
 @ApplicationScoped
 @Singleton
+@AccessTimeout (unit = TimeUnit.HOURS, value = 1l)
 @SuppressWarnings("squid:S3306")
-@Lock(LockType.READ)
 public class ServiceEntityUpdater extends EntityUpdater {
 
   private static final int TIMER_INTERVAL = 5000;
@@ -59,7 +58,6 @@ public class ServiceEntityUpdater extends EntityUpdater {
   private TimerService timerService;
 
   private boolean stopped;
-  private boolean running;
   private List<String> queue;
 
   @PostConstruct
@@ -74,7 +72,6 @@ public class ServiceEntityUpdater extends EntityUpdater {
 
   @Override
   public void startTimer() {
-    running = false;
     startTimer(TIMER_INTERVAL);
   }
 
@@ -90,8 +87,6 @@ public class ServiceEntityUpdater extends EntityUpdater {
     timerService.createSingleActionTimer(duration, timerConfig);
   }
 
-  @Asynchronous
-  @Lock(LockType.READ)
   public void onServiceIdUpdateRequest(@Observes ServiceIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {
@@ -108,17 +103,11 @@ public class ServiceEntityUpdater extends EntityUpdater {
   @Timeout
   public void timeout(Timer timer) {
     if (!stopped) {
-      if (running) {
-        return;
-      }
-
       try {
-        running = true;
         if (!queue.isEmpty()) {
           processEntity(queue.iterator().next());
         }
       } finally {
-        running = false;
         startTimer(TIMER_INTERVAL);
       }
 
