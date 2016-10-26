@@ -36,7 +36,7 @@ public abstract class AbstractEntityCache <T> implements Serializable {
   @Inject
   private transient Logger logger;
 
-  @Resource (lookup = "java:jboss/infinispan/container/kunta-api")
+  @Resource (lookup = "java:jboss/infinispan/container/restful-ptv")
   private transient CacheContainer cacheContainer;
   
   public abstract String getCacheName();
