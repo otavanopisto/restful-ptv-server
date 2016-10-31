@@ -392,15 +392,15 @@
                       <command>/system-property=it-test:add(value="true")</command>
                       <command>/system-property=ptv.url:add(value="http://${it.host}:${it.port.wiremock}")</command>
                       <command>/subsystem=undertow/server=default-server/host=restful-ptv:add(alias=["${it.host}"])</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api:add()</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=organizations:add()</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=services:add()</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=servicechannels:add()</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=electronicchannels:add()</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=servicelocationchannels:add()</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=printableformchannels:add()</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=phonechannels:add()</command>
-                      <command>/subsystem=infinispan/cache-container=kunta-api/local-cache=webpagechannels:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv/local-cache=organizations:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv/local-cache=services:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv/local-cache=servicechannels:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv/local-cache=electronicchannels:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv/local-cache=servicelocationchannels:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv/local-cache=printableformchannels:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv/local-cache=phonechannels:add()</command>
+                      <command>/subsystem=infinispan/cache-container=restful-ptv/local-cache=webpagechannels:add()</command>
                     </commands>
                   </before-deployment>
                   <filename>${project.build.finalName}.${project.packaging}</filename>
