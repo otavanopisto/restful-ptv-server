@@ -26,4 +26,7 @@ notifications:
   
 notifications:
   webhooks:
-    - http://travis.metatavu.io:7333/travisping
+    urls:
+      - http://travis.metatavu.io:7333/travisping
+    on_success: always
+    on_failure: never
