@@ -33,9 +33,9 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; t
     -Dsonar.projectVersion=$PROJECT_VERSION \
     -Dsonar.sources=src \
     -Dsonar.java.source=1.8
-  set -e
+#  set -e
   mvn clean verify jacoco:report coveralls:report -Pitests -DrepoToken=$COVERALLS_TOKEN
-  set +e
+#  set +e
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; then
   echo "Master build"
 else
