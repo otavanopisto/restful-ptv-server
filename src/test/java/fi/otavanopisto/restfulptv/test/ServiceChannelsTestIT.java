@@ -70,9 +70,27 @@ public class ServiceChannelsTestIT extends AbstractIntegrationTest {
       .body("languages[2]", is("fi"))
       
       .body("attachments.size()", is(0))
-//      
+
       .body("webPages.size()", is(0))
       .body("serviceHours.size()", is(0));
+  }
+
+  @Test
+  public void findElectronicChannelNotFound() throws InterruptedException {
+    waitElectronicChannels();
+    
+    String serviceId = "04c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String incorrectServiceId = "14c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String channelId = "20d1299f-d606-4ced-ad22-ba429252c43c";
+    String[] malformedIds = new String[] {"evil", "*", "/", "1", "-1", "~"};
+    
+    assertFound(String.format("/services/%s/electronicChannels/%s", serviceId, channelId));
+    
+    for (String malformedId : malformedIds) {
+      assertNotFound(String.format("/services/%s/electronicChannels/%s", serviceId, malformedId));
+    }
+    
+    assertNotFound(String.format("/electronicChannels/%s/electronicChannels/%s", incorrectServiceId, channelId));
   }
   
   @Test
