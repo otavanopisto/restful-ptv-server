@@ -387,6 +387,24 @@ public class ServiceChannelsTestIT extends AbstractIntegrationTest {
   }
 
   @Test
+  public void findWebPageChannelNotFound() throws InterruptedException {
+    waitServiceLocationChannels();
+
+    String serviceId = "04c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String incorrectServiceId = "14c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String channelId = "d487de8b-bd31-4b04-8403-f93e39e98510";
+    String[] malformedIds = new String[] {"evil", "*", "/", "1", "-1", "~"};
+    
+    assertFound(String.format("/services/%s/webPageChannels/%s", serviceId, channelId));
+    
+    for (String malformedId : malformedIds) {
+      assertNotFound(String.format("/services/%s/webPageChannels/%s", serviceId, malformedId));
+    }
+    
+    assertNotFound(String.format("/electronicChannels/%s/webPageChannels/%s", incorrectServiceId, channelId));
+  }
+
+  @Test
   public void listElectronicChannels() {
     waitElectronicChannels();
     
