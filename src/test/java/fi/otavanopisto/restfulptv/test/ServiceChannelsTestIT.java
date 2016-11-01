@@ -155,6 +155,24 @@ public class ServiceChannelsTestIT extends AbstractIntegrationTest {
       .body("serviceHours[1].additionalInformation.size()", is(0))      
       .body("publishingStatus", is("Published"));
   }
+
+  @Test
+  public void findPhoneChannelNotFound() throws InterruptedException {
+    waitPhoneChannels();
+
+    String serviceId = "04c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String incorrectServiceId = "14c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String channelId = "01d743b8-8a1f-4e55-8e78-1061b3d96d2a";
+    String[] malformedIds = new String[] {"evil", "*", "/", "1", "-1", "~"};
+    
+    assertFound(String.format("/services/%s/phoneChannels/%s", serviceId, channelId));
+    
+    for (String malformedId : malformedIds) {
+      assertNotFound(String.format("/services/%s/phoneChannels/%s", serviceId, malformedId));
+    }
+    
+    assertNotFound(String.format("/electronicChannels/%s/phoneChannels/%s", incorrectServiceId, channelId));
+  }
   
   @Test
   public void findPrintableFormChannel() {
