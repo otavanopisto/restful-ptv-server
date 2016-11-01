@@ -239,7 +239,7 @@ public class ServiceChannelsTestIT extends AbstractIntegrationTest {
 
   @Test
   public void findPrintableFormChannelNotFound() throws InterruptedException {
-    waitPhoneChannels();
+    waitPrintableFormChannels();
 
     String serviceId = "04c01602-cd3a-4ef5-92e4-6a4ee2723e67";
     String incorrectServiceId = "14c01602-cd3a-4ef5-92e4-6a4ee2723e67";
@@ -327,6 +327,24 @@ public class ServiceChannelsTestIT extends AbstractIntegrationTest {
       .body("serviceHours[0].additionalInformation[0].value", is("Juhlapyhinä suljettu."))
       .body("serviceHours[0].additionalInformation[0].language", is("fi"))
       .body("publishingStatus", is("Published"));
+  }
+
+  @Test
+  public void findServiceLocationChannelNotFound() throws InterruptedException {
+    waitServiceLocationChannels();
+
+    String serviceId = "04c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String incorrectServiceId = "14c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String channelId = "1646ff9a-b111-48aa-b261-be333d144d95";
+    String[] malformedIds = new String[] {"evil", "*", "/", "1", "-1", "~"};
+    
+    assertFound(String.format("/services/%s/serviceLocationChannels/%s", serviceId, channelId));
+    
+    for (String malformedId : malformedIds) {
+      assertNotFound(String.format("/services/%s/serviceLocationChannels/%s", serviceId, malformedId));
+    }
+    
+    assertNotFound(String.format("/electronicChannels/%s/serviceLocationChannels/%s", incorrectServiceId, channelId));
   }
   
   @Test
