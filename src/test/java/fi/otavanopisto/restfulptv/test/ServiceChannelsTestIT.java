@@ -236,6 +236,24 @@ public class ServiceChannelsTestIT extends AbstractIntegrationTest {
       .body("deliveryAddressDescriptions[0].language", is("fi"))
       .body("publishingStatus", is("Published"));
   }
+
+  @Test
+  public void findPrintableFormChannelNotFound() throws InterruptedException {
+    waitPhoneChannels();
+
+    String serviceId = "04c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String incorrectServiceId = "14c01602-cd3a-4ef5-92e4-6a4ee2723e67";
+    String channelId = "032e391b-8b15-4ba3-9239-f9523687fe35";
+    String[] malformedIds = new String[] {"evil", "*", "/", "1", "-1", "~"};
+    
+    assertFound(String.format("/services/%s/printableFormChannels/%s", serviceId, channelId));
+    
+    for (String malformedId : malformedIds) {
+      assertNotFound(String.format("/services/%s/printableFormChannels/%s", serviceId, malformedId));
+    }
+    
+    assertNotFound(String.format("/electronicChannels/%s/printableFormChannels/%s", incorrectServiceId, channelId));
+  }
   
   @Test
   public void findServiceLocationChannel() {
