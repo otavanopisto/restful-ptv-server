@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.AccessTimeout;
+import javax.ejb.Asynchronous;
 import javax.ejb.Singleton;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
@@ -103,6 +104,7 @@ public class ServiceChannelEntityUpdater extends EntityUpdater {
     timerService.createSingleActionTimer(duration, timerConfig);
   }
 
+  @Asynchronous
   public void onServiceIdUpdateRequest(@Observes ServiceChannelIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {

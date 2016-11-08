@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.AccessTimeout;
+import javax.ejb.Asynchronous;
 import javax.ejb.Singleton;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
@@ -88,6 +89,7 @@ public class ServiceEntityUpdater extends EntityUpdater {
     timerService.createSingleActionTimer(duration, timerConfig);
   }
 
+  @Asynchronous
   public void onServiceIdUpdateRequest(@Observes ServiceIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {
