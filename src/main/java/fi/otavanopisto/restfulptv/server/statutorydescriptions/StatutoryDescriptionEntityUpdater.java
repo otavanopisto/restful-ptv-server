@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.AccessTimeout;
+import javax.ejb.Asynchronous;
 import javax.ejb.Singleton;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
@@ -78,7 +79,8 @@ public class StatutoryDescriptionEntityUpdater extends EntityUpdater {
   public void stopTimer() {
     stopped = true;
   }
-
+  
+  @Asynchronous
   public void onStatutoryDescriptionIdUpdateRequest(@Observes StatutoryDescriptionIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {
