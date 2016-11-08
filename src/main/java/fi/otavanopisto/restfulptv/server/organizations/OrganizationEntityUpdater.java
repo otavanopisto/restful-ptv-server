@@ -1,6 +1,7 @@
 package fi.otavanopisto.restfulptv.server.organizations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -94,12 +95,24 @@ public class OrganizationEntityUpdater extends EntityUpdater {
   public void onOrganizationIdUpdateRequest(@Observes OrganizationIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {
-        queue.remove(event.getId());
-        queue.add(0, event.getId());
+        prependToQueue(event.getIds());
       } else {
-        if (!queue.contains(event.getId())) {
-          queue.add(event.getId());
-        }
+        appendToQueue(event.getIds());
+      }
+    }
+  }
+
+  private void prependToQueue(List<String> ids) {
+    for (String id : ids) {
+      queue.remove(id);
+      queue.add(0, id);
+    }
+  }
+
+  private void appendToQueue(List<String> ids) {
+    for (String id : ids) {
+      if (!queue.contains(id)) {
+        queue.add(id);
       }
     }
   }
@@ -134,7 +147,7 @@ public class OrganizationEntityUpdater extends EntityUpdater {
           String serviceId = service.getServiceId();
           String id = String.format("%s+%s", organizationId, serviceId);
           boolean priority = !organizationServiceCache.has(id);
-          organizationServiceIdUpdateRequest.fire(new OrganizationServiceIdUpdateRequest(id, priority));
+          organizationServiceIdUpdateRequest.fire(new OrganizationServiceIdUpdateRequest(Arrays.asList(id), priority));
         }
       }
       

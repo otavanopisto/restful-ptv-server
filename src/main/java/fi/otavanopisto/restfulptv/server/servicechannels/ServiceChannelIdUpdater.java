@@ -104,11 +104,9 @@ public class ServiceChannelIdUpdater implements IdUpdater {
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
 
-      for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new ServiceChannelIdUpdateRequest(guid, false));
-        discoverCount++;
-      }
-
+      updateRequest.fire(new ServiceChannelIdUpdateRequest(pageData.getGuidList(), false));
+      discoverCount += pageData.getGuidList().size();
+      
       pageCount = pageData.getPageCount();
       hasMore = pageCount > page + 1;
 
@@ -134,12 +132,9 @@ public class ServiceChannelIdUpdater implements IdUpdater {
     ApiResponse<VmOpenApiGuidPage> response = ptvApi.getServiceChannelApi().apiServiceChannelGet(priortyScanTime, 0);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
-
-      for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new ServiceChannelIdUpdateRequest(guid, true));
-        discoverCount++;
-      }
-
+      updateRequest.fire(new ServiceChannelIdUpdateRequest(pageData.getGuidList(), true));
+      discoverCount += pageData.getGuidList().size();
+      
       pageCount = pageData.getPageCount();
 
       if (discoverCount > 0) {

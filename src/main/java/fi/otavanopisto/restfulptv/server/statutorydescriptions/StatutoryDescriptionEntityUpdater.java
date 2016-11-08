@@ -84,12 +84,24 @@ public class StatutoryDescriptionEntityUpdater extends EntityUpdater {
   public void onStatutoryDescriptionIdUpdateRequest(@Observes StatutoryDescriptionIdUpdateRequest event) {
     if (!stopped) {
       if (event.isPriority()) {
-        queue.remove(event.getId());
-        queue.add(0, event.getId());
+        prependToQueue(event.getIds());
       } else {
-        if (!queue.contains(event.getId())) {
-          queue.add(event.getId());
-        }
+        appendToQueue(event.getIds());
+      }
+    }
+  }
+
+  private void prependToQueue(List<String> ids) {
+    for (String id : ids) {
+      queue.remove(id);
+      queue.add(0, id);
+    }
+  }
+
+  private void appendToQueue(List<String> ids) {
+    for (String id : ids) {
+      if (!queue.contains(id)) {
+        queue.add(id);
       }
     }
   }

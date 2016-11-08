@@ -103,11 +103,8 @@ public class ServiceIdUpdater implements IdUpdater {
     ApiResponse<VmOpenApiGuidPage> response = ptvApi.getServiceApi().apiServiceGet(null, page);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
-
-      for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new ServiceIdUpdateRequest(guid, false));
-        discoverCount++;
-      }
+      updateRequest.fire(new ServiceIdUpdateRequest(pageData.getGuidList(), false));
+      discoverCount += pageData.getGuidList().size();
 
       pageCount = pageData.getPageCount();
       hasMore = pageCount > page + 1;
@@ -134,11 +131,8 @@ public class ServiceIdUpdater implements IdUpdater {
     ApiResponse<VmOpenApiGuidPage> response = ptvApi.getServiceApi().apiServiceGet(priortyScanTime, 0);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
-
-      for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new ServiceIdUpdateRequest(guid, true));
-        discoverCount++;
-      }
+      updateRequest.fire(new ServiceIdUpdateRequest(pageData.getGuidList(), true));
+      discoverCount += pageData.getGuidList().size();
 
       pageCount = pageData.getPageCount();
 

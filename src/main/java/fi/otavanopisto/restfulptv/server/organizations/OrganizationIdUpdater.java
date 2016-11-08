@@ -103,12 +103,9 @@ public class OrganizationIdUpdater implements IdUpdater {
     ApiResponse<VmOpenApiGuidPage> response = ptvApi.getOrganizationApi().apiOrganizationGet(null, page);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
-
-      for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new OrganizationIdUpdateRequest(guid, false));
-        discoverCount++;
-      }
-
+      updateRequest.fire(new OrganizationIdUpdateRequest(pageData.getGuidList(), false));
+      discoverCount += pageData.getGuidList().size();
+      
       pageCount = pageData.getPageCount();
       hasMore = pageCount > page + 1;
 
@@ -134,11 +131,8 @@ public class OrganizationIdUpdater implements IdUpdater {
     ApiResponse<VmOpenApiGuidPage> response = ptvApi.getOrganizationApi().apiOrganizationGet(priortyScanTime, 0);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
-
-      for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new OrganizationIdUpdateRequest(guid, true));
-        discoverCount++;
-      }
+      updateRequest.fire(new OrganizationIdUpdateRequest(pageData.getGuidList(), true));
+      discoverCount += pageData.getGuidList().size();
 
       pageCount = pageData.getPageCount();
 
