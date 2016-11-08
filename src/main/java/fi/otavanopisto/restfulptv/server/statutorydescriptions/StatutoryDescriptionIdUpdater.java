@@ -103,11 +103,8 @@ public class StatutoryDescriptionIdUpdater implements IdUpdater {
     ApiResponse<VmOpenApiGuidPage> response = ptvApi.getGeneralDescriptionApi().apiGeneralDescriptionGet(null, page);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
-
-      for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new StatutoryDescriptionIdUpdateRequest(guid, false));
-        discoverCount++;
-      }
+      updateRequest.fire(new StatutoryDescriptionIdUpdateRequest(pageData.getGuidList(), false));
+      discoverCount += pageData.getGuidList().size();
 
       pageCount = pageData.getPageCount();
       hasMore = pageCount > page + 1;
@@ -135,11 +132,8 @@ public class StatutoryDescriptionIdUpdater implements IdUpdater {
         .apiGeneralDescriptionGet(priortyScanTime, 0);
     if (response.isOk()) {
       VmOpenApiGuidPage pageData = response.getResponse();
-
-      for (String guid : pageData.getGuidList()) {
-        updateRequest.fire(new StatutoryDescriptionIdUpdateRequest(guid, true));
-        discoverCount++;
-      }
+      updateRequest.fire(new StatutoryDescriptionIdUpdateRequest(pageData.getGuidList(), true));
+      discoverCount += pageData.getGuidList().size();
 
       pageCount = pageData.getPageCount();
 

@@ -1,17 +1,19 @@
 package fi.otavanopisto.restfulptv.server.organizationservices;
 
+import java.util.List;
+
 public class OrganizationServiceIdUpdateRequest {
 
-  private String id;  
+  private List<String> ids;  
   private boolean priority;
   
-  public OrganizationServiceIdUpdateRequest(String id, boolean priority) {
-    this.id = id;
+  public OrganizationServiceIdUpdateRequest(List<String> ids, boolean priority) {
+    this.ids = ids;
     this.priority = priority;
   }
   
-  public String getId() {
-    return id;
+  public List<String> getIds() {
+    return ids;
   }
   
   public boolean isPriority() {
