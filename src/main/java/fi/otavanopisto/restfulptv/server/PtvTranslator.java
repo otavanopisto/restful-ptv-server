@@ -65,7 +65,10 @@ public class PtvTranslator implements Serializable {
     
     List<Organization> result = new ArrayList<>(ptvOrganizations.size());
     for (VmOpenApiOrganization ptvOrganization : ptvOrganizations) {
-      result.add(translateOrganization(ptvOrganization));
+      Organization organization = translateOrganization(ptvOrganization);
+      if (organization != null) {
+        result.add(organization);
+      }
     }
 
     return result;
@@ -78,7 +81,10 @@ public class PtvTranslator implements Serializable {
     
     List<WebPage> result = new ArrayList<>(ptvWebPages.size());
     for (VmOpenApiWebPage ptvWebPage : ptvWebPages) {
-      result.add(translateWebPage(ptvWebPage));
+      WebPage webPage = translateWebPage(ptvWebPage);
+      if (webPage != null) {
+        result.add(webPage);
+      }
     }
 
     return result;
@@ -91,7 +97,10 @@ public class PtvTranslator implements Serializable {
     
     List<OrganizationPhone> result = new ArrayList<>(ptvPhoneNumbers.size());
     for (VmOpenApiOrganizationPhone ptvPhoneNumber : ptvPhoneNumbers) {
-      result.add(translatePhoneNumber(ptvPhoneNumber));
+      OrganizationPhone phoneNumber = translatePhoneNumber(ptvPhoneNumber);
+      if (phoneNumber != null) {
+        result.add(phoneNumber);
+      }
     }
 
     return result;
@@ -104,7 +113,10 @@ public class PtvTranslator implements Serializable {
     
     List<Address> result = new ArrayList<>(ptvAddresses.size());
     for (VmOpenApiAddressWithType ptvAddress : ptvAddresses) {
-      result.add(translateAddress(ptvAddress));
+      Address address = translateAddress(ptvAddress);
+      if (address != null) {
+        result.add(address);
+      }
     }
 
     return result;
@@ -117,7 +129,10 @@ public class PtvTranslator implements Serializable {
     
     List<LocalizedListItem> result = new ArrayList<>(ptvItems.size());
     for (VmOpenApiLocalizedListItem ptvItem : ptvItems) {
-      result.add(translateLocalizedListItem(ptvItem));
+      LocalizedListItem item = translateLocalizedListItem(ptvItem);
+      if (item != null) {
+        result.add(item);
+      }
     }
 
     return result;
@@ -130,7 +145,10 @@ public class PtvTranslator implements Serializable {
     
     List<LocalizedListItem> result = new ArrayList<>(ptvItems.size());
     for (IVmOpenApiLocalizedListItem ptvItem : ptvItems) {
-      result.add(translateLocalizedListItem(ptvItem));
+      LocalizedListItem item = translateLocalizedListItem(ptvItem);
+      if (item != null) {
+        result.add(item);
+      }
     }
 
     return result;
@@ -143,7 +161,10 @@ public class PtvTranslator implements Serializable {
     
     List<LanguageItem> result = new ArrayList<>(ptvLanguageItems.size());
     for (VmOpenApiLanguageItem ptvLanguageItem : ptvLanguageItems) {
-      result.add(translateLangaugeItem(ptvLanguageItem));
+      LanguageItem languageItem = translateLangaugeItem(ptvLanguageItem);
+      if (languageItem != null) {
+        result.add(languageItem);
+      }
     }
 
     return result;
@@ -156,7 +177,10 @@ public class PtvTranslator implements Serializable {
     
     List<OrganizationEmail> result = new ArrayList<>(ptvEmailAddresses.size());
     for (VmOpenApiOrganizationEmail ptvEmailAddress : ptvEmailAddresses) {
-      result.add(translateOrganizationEmail(ptvEmailAddress));
+      OrganizationEmail organizationEmail = translateOrganizationEmail(ptvEmailAddress);
+      if (organizationEmail != null) {
+        result.add(organizationEmail);
+      }
     }
 
     return result;
@@ -169,7 +193,10 @@ public class PtvTranslator implements Serializable {
     
     List<FintoItem> result = new ArrayList<>(ptvFintoItems.size());
     for (VmOpenApiFintoItem ptvFintoItem : ptvFintoItems) {
-      result.add(translateFintoItem(ptvFintoItem));
+      FintoItem fintoItem = translateFintoItem(ptvFintoItem);
+      if (fintoItem != null) {
+        result.add(fintoItem);
+      }
     }
 
     return result;
@@ -182,7 +209,10 @@ public class PtvTranslator implements Serializable {
     
     List<Support> result = new ArrayList<>(ptvSupports.size());
     for (VmOpenApiSupport ptvSupport : ptvSupports) {
-      result.add(translateSupport(ptvSupport));
+      Support support = translateSupport(ptvSupport);
+      if (support != null) {
+        result.add(support);
+      }
     }
 
     return result;
@@ -195,7 +225,10 @@ public class PtvTranslator implements Serializable {
     
     List<Attachment> result = new ArrayList<>(ptvAttachments.size());
     for (VmOpenApiAttachmentWithType ptvAttchment : ptvAttachments) {
-      result.add(translateAttachment(ptvAttchment));
+      Attachment attachment = translateAttachment(ptvAttchment);
+      if (attachment != null) {
+        result.add(attachment);
+      }
     }
 
     return result;
@@ -208,7 +241,10 @@ public class PtvTranslator implements Serializable {
     
     List<Attachment> result = new ArrayList<>(ptvAttachments.size());
     for (VmOpenApiAttachment ptvAttchment : ptvAttachments) {
-      result.add(translateAttachment(ptvAttchment));
+      Attachment attachment = translateAttachment(ptvAttchment);
+      if (attachment != null) {
+        result.add(attachment);
+      }
     }
 
     return result;
@@ -221,7 +257,9 @@ public class PtvTranslator implements Serializable {
 
     List<ServiceHour> result = new ArrayList<>();
     for (VmOpenApiServiceHour ptvServiceHour : ptvServiceHours) {
-      translateServiceHour(result, ptvServiceHour);
+      if (ptvServiceHour != null) {
+        translateServiceHour(result, ptvServiceHour);
+      }
     }
 
     return result;
