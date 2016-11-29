@@ -27,7 +27,7 @@ public class ServiceController implements Serializable {
     return serviceCache.get(id);
   }
   
-  public List<Service> listServices(Long firstResult, Long maxResults) {
+  public List<Service> listServices(String organizationId, Long firstResult, Long maxResults) {
     List<String> ids = serviceCache.getIds();
     
     int idCount = ids.size();
@@ -38,7 +38,9 @@ public class ServiceController implements Serializable {
     for (String id : ids.subList(firstIndex, toIndex)) {
       Service service = findServiceById(id);
       if (service != null) {
-        result.add(service);
+        if (organizationId == null || (service.getOrganizationIds() != null && service.getOrganizationIds().contains(organizationId))) {
+          result.add(service);
+        }
       } else {
         logger.severe(String.format("Could not find service by id %s", id));
       }

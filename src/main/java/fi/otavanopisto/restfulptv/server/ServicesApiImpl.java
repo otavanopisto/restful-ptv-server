@@ -79,7 +79,7 @@ public class ServicesApiImpl extends ServicesApi {
   }
 
   @Override
-  public Response listServices(Long firstResult, Long maxResults) {
+  public Response listServices(String organizationId, Long firstResult, Long maxResults) {
     if (firstResult != null && firstResult < 0) {
       return createBadRequest(FIRST_RESULT_MUST_BY_A_POSITIVE_INTEGER);
     }
@@ -88,7 +88,7 @@ public class ServicesApiImpl extends ServicesApi {
       return createBadRequest(MAX_RESULTS_MUST_BY_A_POSITIVE_INTEGER);
     }
     
-    List<Service> services = serviceController.listServices(firstResult, maxResults);
+    List<Service> services = serviceController.listServices(organizationId, firstResult, maxResults);
     return Response.ok(services)
       .build();
   }
