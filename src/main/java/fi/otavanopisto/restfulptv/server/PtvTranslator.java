@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.otavanopisto.ptv.client.model.IVmOpenApiLocalizedListItem;
 import fi.otavanopisto.ptv.client.model.IVmOpenApiService;
 import fi.otavanopisto.ptv.client.model.VmOpenApiAddress;
@@ -478,7 +480,7 @@ public class PtvTranslator implements Serializable {
     
     List<String> organizationIds = new ArrayList<>(organizations.size());
     for (VmOpenApiServiceOrganization organization : organizations) {
-      if (!organizationIds.contains(organization.getOrganizationId())) {
+      if (organization != null && StringUtils.isNotBlank(organization.getOrganizationId()) && (!organizationIds.contains(organization.getOrganizationId()))) {
         organizationIds.add(organization.getOrganizationId());
       }
     }
