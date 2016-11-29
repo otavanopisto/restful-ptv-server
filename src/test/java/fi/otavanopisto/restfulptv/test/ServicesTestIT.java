@@ -190,6 +190,36 @@ public class ServicesTestIT extends AbstractIntegrationTest {
   }
   
   @Test
+  public void testListServicesByOrganizationNotFound() {
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get(String.format("/services?organizationId=%s", "not-a-organization"))
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(0));
+  }
+  
+  @Test
+  public void testListServicesByOrganization() {
+    given() 
+      .baseUri(getApiBasePath())
+      .contentType(ContentType.JSON)
+      .get(String.format("/services?organizationId=%s", "c11a9489-02f8-47d7-956a-26344b99bf92"))
+      .then()
+      .assertThat()
+      .statusCode(200)
+      .body("id.size()", is(2))
+      .body("id[0]", is("1c75be4e-293b-4503-9658-8e25a380fa5a"))
+      .body("organizationIds[0].size", is(1))
+      .body("organizationIds[0][0]", is("c11a9489-02f8-47d7-956a-26344b99bf92"))
+      .body("id[1]", is("9f97d7d9-509a-4185-a798-4b91b6f1c25f"))
+      .body("organizationIds[1].size", is(1))
+      .body("organizationIds[1][0]", is("c11a9489-02f8-47d7-956a-26344b99bf92"));
+  }
+  
+  @Test
   public void testListServicesLimits() {
     assertListLimits("/services", 3);
   }
