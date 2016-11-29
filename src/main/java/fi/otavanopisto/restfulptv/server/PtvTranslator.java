@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.otavanopisto.ptv.client.model.IVmOpenApiLocalizedListItem;
 import fi.otavanopisto.ptv.client.model.IVmOpenApiService;
 import fi.otavanopisto.ptv.client.model.VmOpenApiAddress;
@@ -30,6 +32,7 @@ import fi.otavanopisto.ptv.client.model.VmOpenApiPrintableFormChannel;
 import fi.otavanopisto.ptv.client.model.VmOpenApiService;
 import fi.otavanopisto.ptv.client.model.VmOpenApiServiceHour;
 import fi.otavanopisto.ptv.client.model.VmOpenApiServiceLocationChannel;
+import fi.otavanopisto.ptv.client.model.VmOpenApiServiceOrganization;
 import fi.otavanopisto.ptv.client.model.VmOpenApiSupport;
 import fi.otavanopisto.ptv.client.model.VmOpenApiWebPage;
 import fi.otavanopisto.ptv.client.model.VmOpenApiWebPageChannel;
@@ -435,7 +438,8 @@ public class PtvTranslator implements Serializable {
     result.setChargeType(ptvService.getServiceChargeType());
     result.setAdditionalInformations(translateLocalizedListItems(ptvService.getServiceAdditionalInformations()));
     result.setTargetGroups(translateFintoItems(ptvService.getTargetGroups()));
-
+    result.setOrganizationIds(getOrganizationIds(ptvService.getOrganizations()));
+    
     return result;
   }
 
@@ -464,8 +468,24 @@ public class PtvTranslator implements Serializable {
     result.setChargeType(ptvService.getServiceChargeType());
     result.setAdditionalInformations(translateLocalizedListItems(ptvService.getServiceAdditionalInformations()));
     result.setTargetGroups(translateFintoItems(ptvService.getTargetGroups()));
-
+    result.setOrganizationIds(getOrganizationIds(ptvService.getOrganizations()));
+    
     return result;
+  }
+  
+  private List<String> getOrganizationIds(List<VmOpenApiServiceOrganization> organizations) {
+    if (organizations == null) {
+      return Collections.emptyList();
+    }
+    
+    List<String> organizationIds = new ArrayList<>(organizations.size());
+    for (VmOpenApiServiceOrganization organization : organizations) {
+      if (organization != null && StringUtils.isNotBlank(organization.getOrganizationId()) && (!organizationIds.contains(organization.getOrganizationId()))) {
+        organizationIds.add(organization.getOrganizationId());
+      }
+    }
+     
+    return organizationIds;
   }
 
   private FintoItem translateFintoItem(VmOpenApiFintoItem ptvFintoItem) {
