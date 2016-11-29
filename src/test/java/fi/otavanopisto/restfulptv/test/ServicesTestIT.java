@@ -99,7 +99,10 @@ public class ServicesTestIT extends AbstractIntegrationTest {
       .body("additionalInformations.size()", is(1))
       .body("additionalInformations[0].language", is("fi"))
       .body("additionalInformations[0].value", is(""))
-      .body("additionalInformations[0].type", is("ChargeType"));
+      .body("additionalInformations[0].type", is("ChargeType"))
+      
+      .body("organizationIds.size", is(1))
+      .body("organizationIds[0]", is("c11a9489-02f8-47d7-956a-26344b99bf92"));
   }
   
   @Test
@@ -176,7 +179,14 @@ public class ServicesTestIT extends AbstractIntegrationTest {
       .body("additionalInformations[1].size()", is(5))
       .body("additionalInformations[1][0].language", is("fi"))
       .body("additionalInformations[1][0].value", is(""))
-      .body("additionalInformations[1][0].type", is("ChargeType"));
+      .body("additionalInformations[1][0].type", is("ChargeType"))
+      
+      .body("organizationIds[0].size", is(2))
+      .body("organizationIds[0][0]", is("3f7ca041-bf91-4355-95a9-8e38c2441ef4"))
+      .body("organizationIds[0][1]", is("516f3e93-3c31-4275-a3c1-6835f61be4fa"))
+      
+      .body("organizationIds[1].size", is(1))
+      .body("organizationIds[1][0]", is("c11a9489-02f8-47d7-956a-26344b99bf92"));
   }
   
   @Test
